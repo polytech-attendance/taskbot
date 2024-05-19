@@ -21,6 +21,11 @@
             <artifactId>jooq</artifactId>
             <version>3.19.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta-extensions</artifactId>
+            <version>3.19.8</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/r2dbc-postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -45,6 +50,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>5.3.21</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -78,26 +90,26 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <configuration>
-                            <generator>
-                                <database>
-                                    <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
-                                    <properties>
-                                        <property>
-                                            <key>scripts</key>
-                                            <value>${basedir}/src/main/resources/create.sql</value>
-                                        </property>
-                                    </properties>
-                                    <inputSchema>R2DBC_EXAMPLE</inputSchema>
-                                </database>
-                                <target>
-                                    <packageName>ru.spbstu.ai.r2dbc.db</packageName>
-                                    <directory>src/main/java</directory>
-                                </target>
-                            </generator>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <jdbc>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>jdbc:postgresql://localhost/tasks</url>
+                        <user></user>
+                        <password></password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <inputSchema>public</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>ru.spbstu.ai.r2dbc.db</packageName>
+                            <directory>src/main/java</directory>
+                        </target>
+                    </generator>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -1,13 +1,11 @@
-create database tasks;
-drop schema if exists task_schema cascade;
-create schema task_schema;
+-- create database tasks;
 
-create table task_schema.owner
+create table owner
 ( owner_id integer generated always as identity primary key
 , telegram_id integer
 );
 
-create table task_schema.task
+create table task
 ( task_id integer generated always as identity primary key
 , owner_id integer references owner (owner_id) on delete restrict on update restrict
 , summary text
@@ -17,7 +15,7 @@ create table task_schema.task
 , spent_time interval
 );
 
-create table task_schema.recurring_task
+create table recurring_task
 ( recurring_task_id integer generated always as identity primary key
 , owner_id integer references owner (owner_id) on delete restrict on update restrict
 , summary text
