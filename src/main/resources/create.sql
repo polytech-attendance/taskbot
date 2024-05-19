@@ -5,7 +5,7 @@ create schema task_schema;
 create table task_schema.owner
 ( owner_id integer generated always as identity primary key
 , telegram_id integer
-)
+);
 
 create table task_schema.task
 ( task_id integer generated always as identity primary key
@@ -15,7 +15,7 @@ create table task_schema.task
 , status integer
 , estimated_time interval
 , spent_time interval
-)
+);
 
 create table task_schema.recurring_task
 ( recurring_task_id integer generated always as identity primary key
@@ -25,4 +25,4 @@ create table task_schema.recurring_task
 , period interval
 , finish timestamp with time zone
 , status integer
-)
+);
