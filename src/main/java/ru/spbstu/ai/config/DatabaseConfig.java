@@ -5,6 +5,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -19,6 +20,7 @@ public class DatabaseConfig {
     @Autowired
     Environment env;
 
+    @Bean
     DSLContext dslContext() {
         ConnectionFactory factory = ConnectionFactories.get(Objects.requireNonNull(env.getProperty("r2dbc_url")));
         return DSL.using(factory, SQLDialect.POSTGRES);

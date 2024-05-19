@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public record Task(
-        Long id,
+        int id,
         String summary,
         Instant deadline,
         TaskStatus status,

@@ -8,12 +8,12 @@ import java.time.Duration;
 import java.time.Instant;
 
 public interface RecurringTaskService {
-    Mono<RecurringTask> createRecurring(String summary, Instant start, Duration period, Instant finish);
-    Flux<RecurringTask> getInProgress();
+    Mono<RecurringTask> createRecurring(int userId, String summary, Instant start, Duration period, Instant finish);
+    Flux<RecurringTask> getInProgress(int userId);
 
-    Mono<RecurringTask> markDone(Long id);
-    Mono<RecurringTask> markInProgress(Long id);
+    Mono<RecurringTask> markDone(int userId, int taskId);
+    Mono<RecurringTask> markInProgress(int userId, int taskId);
 
-    Mono<RecurringTask> setSummary(Long id, String summary);
-    Mono<RecurringTask> reschedule(Long id, Instant start, Duration period, Instant finish);
+    Mono<RecurringTask> setSummary(int userId, int taskId, String summary);
+    Mono<RecurringTask> reschedule(int userId, int taskId, Instant start, Duration period, Instant finish);
 }
