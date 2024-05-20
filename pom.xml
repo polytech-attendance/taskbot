@@ -40,11 +40,10 @@
             <type>pom</type>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>6.9.7.1</version>
+            <artifactId>telegrambots-extensions</artifactId>
+            <version>7.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
