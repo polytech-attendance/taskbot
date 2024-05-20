@@ -23,8 +23,12 @@ public class TelegramConfig {
     @Autowired
     Environment env;
 
+    @Autowired
+    StartCommand start;
+
     @Bean
     public BotSession sessionStart(TelegramBotsLongPollingApplication botsApplication, TelegramBot bot) throws TelegramApiException {
+        bot.register(start);
         return botsApplication.registerBot(env.getProperty("token"), bot);
     }
 
