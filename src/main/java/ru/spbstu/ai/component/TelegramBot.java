@@ -8,6 +8,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
+
+    public TelegramBot(String botToken) {
+        super(botToken);
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         if (!update.hasMessage() || !update.getMessage().hasText()) {
