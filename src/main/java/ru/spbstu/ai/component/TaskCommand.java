@@ -44,13 +44,12 @@ public class TaskCommand extends BotCommand {
         users.getUser(telegramId)
                 .flatMap(foundUserId -> {
                     return tasks.getByDeadline((int) foundUserId.userId(), monthAgoInstant, monthLaterInstant)
-                            .collectList() // Собираем все задачи в список
+                            .collectList()
                             .doOnSuccess(taskList -> {
-                                StringBuilder tasksMessage = new StringBuilder("Your tasks:\n");
+                                sendMessageToChat(telegramClient, chat.getId(), "Total amout of task: " + "**" + taskList.size() + "**");
                                 for (Task task : taskList) {
-                                    tasksMessage.append(task.toString()).append("\n"); // Добавляем каждую задачу в сообщение
+                                    sendMessageToChat(telegramClient, chat.getId(), task.toString());
                                 }
-                                sendMessageToChat(telegramClient, chat.getId(), tasksMessage.toString()); // Отправляем сообщение с задачами
                             })
                             .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
                 })
@@ -61,7 +60,8 @@ public class TaskCommand extends BotCommand {
 
     private void sendMessageToChat(TelegramClient telegramClient, Long chatId, String message) {
         try {
-            telegramClient.execute(new SendMessage(chatId.toString(), message));
+            SendMessage msg = new SendMessage(chatId.toString(), message);
+            telegramClient.execute(msg);
         } catch (TelegramApiException e) {
             throw new RuntimeException("Error sending message to chat", e);
         }
