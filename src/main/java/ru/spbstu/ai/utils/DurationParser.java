@@ -9,6 +9,10 @@ import java.util.regex.Pattern;
 public class DurationParser {
 
     public static String toHumanReadableString(Duration duration) {
+        if(duration.equals(Duration.ZERO)) {
+            return "0";
+        }
+
         long days = duration.toDays();
         duration = duration.minusDays(days);
 
