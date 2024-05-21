@@ -1,5 +1,7 @@
 package ru.spbstu.ai.entity;
 
+import ru.spbstu.ai.utils.DurationParser;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -18,8 +20,8 @@ public record Task(
                 ", summary='" + summary + '\'' +
                 ", deadline=" + deadline +
                 ", status=" + status +
-                ", estimatedTime=" + estimatedTime +
-                ", spentTime=" + spentTime +
+                ", estimatedTime=" + DurationParser.toHumanReadableString(estimatedTime) +
+                ", spentTime=" + DurationParser.toHumanReadableString(spentTime) +
                 '}';
     }
 }
