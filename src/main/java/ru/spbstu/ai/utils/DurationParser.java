@@ -7,6 +7,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DurationParser {
+    public static Duration parsePeriod(String input) {
+        switch (input.toLowerCase()) {
+            case "hourly":
+                return Duration.ofHours(1);
+            case "daily":
+                return Duration.ofDays(1);
+            case "weekly":
+                return Duration.ofDays(7);
+            case "monthly":
+                return Duration.ofDays(30);
+            default:
+                throw new IllegalArgumentException("Invalid duration format: " + input);
+        }
+    }
+
 
     public static String toHumanReadableString(Duration duration) {
         if(duration.equals(Duration.ZERO)) {
