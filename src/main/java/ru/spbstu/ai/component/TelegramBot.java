@@ -1,5 +1,6 @@
 package ru.spbstu.ai.component;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
 
@@ -18,6 +20,9 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     @Autowired
     UserService users;
+
+    @Autowired
+    RecurringTaskService recurrings;
 
     public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName) {
         super(client, true, () -> botName);
@@ -39,7 +44,8 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                     .doOnSuccess(ownerId -> {
                         System.out.println("Owner ID: " + ownerId);
                         // DONE, IN_PROGRESS
-                        if (callbackQueryData.length >= 1 && (callbackQueryData[0].equals("done") || callbackQueryData[0].equals("in_progress"))) {
+                        if (callbackQueryData.length >= 1 &&
+                                (callbackQueryData[0].equals("done") || callbackQueryData[0].equals("in_progress") || callbackQueryData[0].equals("recurring"))) {
                             if (callbackQueryData.length >= 3) {
                                 String secondElement = callbackQueryData[1];
                                 String thirdElement = callbackQueryData[2];
@@ -59,10 +65,16 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                         tasks.markInProgress(ownerId.intValue(), id).subscribe();
                                     }
                                 }
-                            } else {
+                            }
+                            else if (callbackQueryData.length == 2) {
+                                var id = Integer.parseInt(callbackQueryData[1]);
+                                recurrings.markDone(ownerId.intValue(), id).subscribe();
+                            }
+                            else {
                                 System.out.println("Callback query data does not contain enough elements.");
                             }
                         }
+
                     })
                     .subscribe();
 
