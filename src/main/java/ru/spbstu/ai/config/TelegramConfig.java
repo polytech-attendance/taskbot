@@ -42,6 +42,12 @@ public class TelegramConfig {
     @Autowired
     RecurringCommand recurring;
 
+    @Autowired
+    RecurringRescheduleCommand reschedule;
+
+    @Autowired
+    RecurringSummaryCommand recurringSummary;
+
     @Bean
     public BotSession sessionStart(TelegramBotsLongPollingApplication botsApplication, TelegramBot bot) throws TelegramApiException {
         bot.register(start);
@@ -51,6 +57,8 @@ public class TelegramConfig {
         bot.register(taskSpentTime);
         bot.register(recurringCreate);
         bot.register(recurring);
+        bot.register(reschedule);
+        bot.register(recurringSummary);
         return botsApplication.registerBot(env.getProperty("token"), bot);
     }
 
