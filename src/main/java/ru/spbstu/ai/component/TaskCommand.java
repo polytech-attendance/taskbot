@@ -54,7 +54,7 @@ public class TaskCommand extends BotCommand {
                             .doOnSuccess(taskList -> {
                                 sendMessageToChat(telegramClient, chat.getId(), "Total amout of task: " + "**" + taskList.size() + "**");
                                 for (Task task : taskList) {
-                                    sendTaskMessageWithButtons(telegramClient, chat.getId(), task.toString());
+                                    sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
                                 }
                             })
                             .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
@@ -73,14 +73,15 @@ public class TaskCommand extends BotCommand {
         }
     }
 
-    public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, String text) {
-        SendMessage message = new SendMessage(chatId.toString(), text);
+    public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, Task task) {
+        SendMessage message = new SendMessage(chatId.toString(), task.toString());
 
-        InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE");
-        doneButton.setCallbackData("done");
+        InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
+        doneButton.setCallbackData("done task " + task.id());
 
-        InlineKeyboardButton inProgressButton = new InlineKeyboardButton("IN PROGRESS");
-        inProgressButton.setCallbackData("in_progress");
+        // Emoji clocks
+        InlineKeyboardButton inProgressButton = new InlineKeyboardButton("IN PROGRESS \uD83D\uDD53");
+        inProgressButton.setCallbackData("in_progress task " + task.id());
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(doneButton);
