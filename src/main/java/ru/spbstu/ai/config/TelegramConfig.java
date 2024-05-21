@@ -34,12 +34,16 @@ public class TelegramConfig {
     @Autowired
     TaskDeadlineCommand taskDeadline;
 
+    @Autowired
+    TaskSpentTime taskSpentTime;
+
     @Bean
     public BotSession sessionStart(TelegramBotsLongPollingApplication botsApplication, TelegramBot bot) throws TelegramApiException {
         bot.register(start);
         bot.register(task);
         bot.register(createTask);
         bot.register(taskDeadline);
+        bot.register(taskSpentTime);
         return botsApplication.registerBot(env.getProperty("token"), bot);
     }
 
