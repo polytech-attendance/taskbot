@@ -70,11 +70,15 @@ public class RecurringCommand extends BotCommand {
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, RecurringTask task) {
         SendMessage message = new SendMessage(chatId.toString(), task.toString());
 
+        InlineKeyboardButton deleteButton = new InlineKeyboardButton("DELETE ❌");
+        deleteButton.setCallbackData("recurring delete " + task.id());
+
         InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
-        doneButton.setCallbackData("recurring " + task.id());
+        doneButton.setCallbackData("recurring done " + task.id());
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(doneButton);
+        row1.add(deleteButton);
 
 
         List<InlineKeyboardRow> rows = new ArrayList<>();

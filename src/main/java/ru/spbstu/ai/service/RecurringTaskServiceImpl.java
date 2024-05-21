@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static org.jooq.impl.DSL.asterisk;
+import static org.jooq.impl.DSL.user;
 import static ru.spbstu.ai.r2dbc.db.tables.RecurringTask.RECURRING_TASK;
 import static ru.spbstu.ai.r2dbc.db.tables.Task.TASK;
 
@@ -59,6 +60,14 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
     @Override
     public Mono<RecurringTask> markInProgress(int userId, int taskId) {
         return null;
+    }
+
+    @Override
+    public Mono<Void> deleteRecurring(int userId, int taskId) {
+        return Mono.from(
+                ctx.delete(RECURRING_TASK).where(RECURRING_TASK.RECURRING_TASK_ID.eq(taskId))
+                        .and(RECURRING_TASK.OWNER_ID.eq(userId))
+        ).then();
     }
 
     @Override

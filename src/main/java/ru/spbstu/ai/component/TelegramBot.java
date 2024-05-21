@@ -46,7 +46,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                         // DONE, IN_PROGRESS
                         if (callbackQueryData.length >= 1 &&
                                 (callbackQueryData[0].equals("done") || callbackQueryData[0].equals("in_progress") || callbackQueryData[0].equals("recurring"))) {
-                            if (callbackQueryData.length >= 3) {
+                            if (callbackQueryData.length >= 3 && !callbackQueryData[0].equals("recurring")) {
                                 String secondElement = callbackQueryData[1];
                                 String thirdElement = callbackQueryData[2];
 
@@ -66,9 +66,15 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                     }
                                 }
                             }
-                            else if (callbackQueryData.length == 2) {
-                                var id = Integer.parseInt(callbackQueryData[1]);
+                            else if (callbackQueryData.length == 3) {
+                                var id = Integer.parseInt(callbackQueryData[2]);
+                                if(callbackQueryData[1].equals("done")) {
                                 recurrings.markDone(ownerId.intValue(), id).subscribe();
+                                }
+                                else
+                                {
+                                    recurrings.deleteRecurring(ownerId.intValue(), id).subscribe();
+                                }
                             }
                             else {
                                 System.out.println("Callback query data does not contain enough elements.");

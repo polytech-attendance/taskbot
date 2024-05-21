@@ -33,7 +33,7 @@ public class RecurringCreateCommand extends BotCommand {
 
     @Override
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
-        if (strings.length < 2) {
+        if (strings.length < 3) {
             sendMessageToChat(telegramClient, chat.getId(), "Invalid command format. Use: /recurring_create <Summary> <hourly\\daily\\weekly\\monthly> <Deadline>");
             return;
         }

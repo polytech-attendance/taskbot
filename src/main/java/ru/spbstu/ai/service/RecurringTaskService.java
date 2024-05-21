@@ -13,6 +13,7 @@ public interface RecurringTaskService {
 
     Mono<Void> markDone(int userId, int taskId);
     Mono<RecurringTask> markInProgress(int userId, int taskId);
+    Mono<Void> deleteRecurring(int userId, int taskId);
 
     Mono<Void> setSummary(int userId, int taskId, String summary);
     Mono<Void> reschedule(int userId, int taskId, Instant start, Duration period, Instant finish);
