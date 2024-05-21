@@ -6,6 +6,9 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.Task;
@@ -17,6 +20,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class TaskCommand extends BotCommand {
@@ -48,7 +54,7 @@ public class TaskCommand extends BotCommand {
                             .doOnSuccess(taskList -> {
                                 sendMessageToChat(telegramClient, chat.getId(), "Total amout of task: " + "**" + taskList.size() + "**");
                                 for (Task task : taskList) {
-                                    sendMessageToChat(telegramClient, chat.getId(), task.toString());
+                                    sendTaskMessageWithButtons(telegramClient, chat.getId(), task.toString());
                                 }
                             })
                             .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
@@ -66,4 +72,32 @@ public class TaskCommand extends BotCommand {
             throw new RuntimeException("Error sending message to chat", e);
         }
     }
+
+    public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, String text) {
+        SendMessage message = new SendMessage(chatId.toString(), text);
+
+        InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE");
+        doneButton.setCallbackData("done");
+
+        InlineKeyboardButton inProgressButton = new InlineKeyboardButton("IN PROGRESS");
+        inProgressButton.setCallbackData("in_progress");
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(doneButton);
+        row1.add(inProgressButton);
+
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(new InlineKeyboardRow(row1));
+
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
+        message.setReplyMarkup(markup);
+
+        try {
+            telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
