@@ -24,10 +24,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Mono<Void> createTask(int userId, String summary, Instant deadline, Duration estimatedTime) {
-        return Mono.from(ctx.insertInto(TASK).columns(TASK.OWNER_ID, TASK.SUMMARY, TASK.DEADLINE, TASK.ESTIMATED_TIME)
-                .values(userId, summary, deadline.atOffset(ZoneOffset.UTC), YearToSecond.valueOf(estimatedTime)))
+        return Mono.from(ctx.insertInto(TASK).columns(TASK.OWNER_ID, TASK.SUMMARY, TASK.DEADLINE, TASK.ESTIMATED_TIME, TASK.STATUS, TASK.SPENT_TIME)
+                .values(userId, summary, deadline.atOffset(ZoneOffset.UTC), YearToSecond.valueOf(estimatedTime), 0, YearToSecond.valueOf(0)))
                 .then();
     }
+
 
     @Override
     public Mono<Void> addSpentTime(int userId, int taskId, Duration spent) {
