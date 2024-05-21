@@ -12,7 +12,9 @@ import org.telegram.telegrambots.longpolling.BotSession;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.spbstu.ai.component.CreateTaskCommand;
 import ru.spbstu.ai.component.StartCommand;
+import ru.spbstu.ai.component.TaskCommand;
 import ru.spbstu.ai.component.TelegramBot;
 
 @Configuration
@@ -26,9 +28,17 @@ public class TelegramConfig {
     @Autowired
     StartCommand start;
 
+    @Autowired
+    TaskCommand task;
+
+    @Autowired
+    CreateTaskCommand createTask;
+
     @Bean
     public BotSession sessionStart(TelegramBotsLongPollingApplication botsApplication, TelegramBot bot) throws TelegramApiException {
         bot.register(start);
+        bot.register(task);
+        bot.register(createTask);
         return botsApplication.registerBot(env.getProperty("token"), bot);
     }
 
