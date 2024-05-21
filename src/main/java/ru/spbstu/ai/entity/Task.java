@@ -11,4 +11,15 @@ public record Task(
         Duration estimatedTime,
         Duration spentTime
 ) {
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", summary='" + summary + '\'' +
+                ", deadline=" + deadline +
+                ", status=" + status +
+                ", estimatedTime=" + estimatedTime +
+                ", spentTime=" + spentTime +
+                '}';
+    }
 }
