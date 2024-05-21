@@ -74,7 +74,7 @@ public class TaskCommand extends BotCommand {
     }
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, Task task) {
-        SendMessage message = new SendMessage(chatId.toString(), task.toString());
+        SendMessage message = new SendMessage(chatId.toString(), task.toHumanReadableString());
 
         InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
         doneButton.setCallbackData("done task " + task.id());

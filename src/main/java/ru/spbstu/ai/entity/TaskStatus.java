@@ -11,4 +11,13 @@ public enum TaskStatus {
             return DONE;
         }
     }
+
+    public String toHumanReadableString() {
+        if (this.equals(IN_PROGRESS)) {
+            return "\uD83D\uDD53";
+        }
+        else {
+            return "✅";
+        }
+    }
 }
