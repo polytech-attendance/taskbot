@@ -45,6 +45,7 @@ public class CreateTaskCommand extends BotCommand {
         try {
             Instant deadline = Instant.parse(deadlineString);
             int telegramId = user.getId().intValue();
+            // TODO: Make estimated time parser.
             users.getUser(telegramId)
                     .flatMap(foundUserId -> tasks.createTask((int) foundUserId.userId(), summary, deadline, Duration.ZERO)
                             .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task has been created."))
