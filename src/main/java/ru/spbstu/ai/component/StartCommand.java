@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import reactor.core.publisher.Mono;
 import ru.spbstu.ai.service.UserService;
 
 @Component
@@ -22,7 +23,8 @@ public class StartCommand extends BotCommand {
 
     @Override
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
-        var userDb = users.create(user.getId()).block();
+        signUp(user); // No message to reply similar for both cases: user exists, and not.
+
         StringBuilder builder = new StringBuilder();
         builder.append("Welcome ").append(user.getUserName()).append("\n")
             .append("this bot will manage your tasks!");
@@ -31,5 +33,20 @@ public class StartCommand extends BotCommand {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void signUp(User user) {
+        users.getUser(user.getId())
+                .hasElement()  // Check if user exists
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.empty();
+                    } else {
+                        return users.create(user.getId())
+                                .doOnNext(newUser -> {
+                                    // TODO: Create log info output, about creating user
+                                });
+                    }
+                });
     }
 }
