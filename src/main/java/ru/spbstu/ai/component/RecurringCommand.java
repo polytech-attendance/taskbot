@@ -43,7 +43,7 @@ public class RecurringCommand extends BotCommand {
         int telegramId = user.getId().intValue();
         users.getUser(telegramId)
                 .flatMap(foundUserId -> {
-                    return recurring.getInProgress((int) foundUserId.userId())
+                    return recurring.getRecurrings((int) foundUserId.userId())
                             .collectList()
                             .doOnSuccess(recurringList -> {
                                 sendMessageToChat(telegramClient, chat.getId(), "Total amount of recurring task: " + "**" + recurringList.size() + "**");

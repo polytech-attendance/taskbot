@@ -10,6 +10,7 @@ import java.time.Instant;
 public interface RecurringTaskService {
     Mono<Void> createRecurring(int userId, String summary, Instant start, Duration period, Instant finish);
     Flux<RecurringTask> getInProgress(int userId);
+    Flux<RecurringTask> getRecurrings(int userId);
 
     Mono<Void> markDone(int userId, int taskId);
     Mono<RecurringTask> markInProgress(int userId, int taskId);
