@@ -68,7 +68,7 @@ public class RecurringCommand extends BotCommand {
     }
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, RecurringTask task) {
-        SendMessage message = new SendMessage(chatId.toString(), task.toString());
+        SendMessage message = new SendMessage(chatId.toString(), task.toHumanReadableString());
 
         InlineKeyboardButton deleteButton = new InlineKeyboardButton("DELETE ❌");
         deleteButton.setCallbackData("recurring delete " + task.id());

@@ -41,9 +41,9 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
                                 .and(RECURRING_TASK.STATUS.eq(0))
         ).map(x -> new RecurringTask(Long.valueOf(x.get(RECURRING_TASK.RECURRING_TASK_ID)),
                         x.get(RECURRING_TASK.SUMMARY),
-                        x.get(RECURRING_TASK.FINISH).toInstant(),
-                        x.get(RECURRING_TASK.PERIOD).toDuration(),
                         x.get(RECURRING_TASK.START).toInstant(),
+                        x.get(RECURRING_TASK.PERIOD).toDuration(),
+                        x.get(RECURRING_TASK.FINISH).toInstant(),
                         TaskStatus.of(x.get(RECURRING_TASK.STATUS))));
     }
 
@@ -54,16 +54,16 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
                         .where(RECURRING_TASK.OWNER_ID.eq(userId))
         ).map(x -> new RecurringTask(Long.valueOf(x.get(RECURRING_TASK.RECURRING_TASK_ID)),
                 x.get(RECURRING_TASK.SUMMARY),
-                x.get(RECURRING_TASK.FINISH).toInstant(),
-                x.get(RECURRING_TASK.PERIOD).toDuration(),
                 x.get(RECURRING_TASK.START).toInstant(),
+                x.get(RECURRING_TASK.PERIOD).toDuration(),
+                x.get(RECURRING_TASK.FINISH).toInstant(),
                 TaskStatus.of(x.get(RECURRING_TASK.STATUS))));
     }
 
     @Override
     public Mono<Void> markDone(int userId, int taskId) {
         return Mono.from(
-                ctx.update(RECURRING_TASK).set(RECURRING_TASK.STATUS, 1)
+                ctx.update(RECURRING_TASK).set(RECURRING_TASK.STATUS, 1).set(RECURRING_TASK.START, Instant.now().atOffset(ZoneOffset.UTC))
                         .where(RECURRING_TASK.RECURRING_TASK_ID.eq(taskId).and(RECURRING_TASK.OWNER_ID.eq(userId)))
         ).then();
     }

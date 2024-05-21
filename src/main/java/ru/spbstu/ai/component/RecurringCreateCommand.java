@@ -39,7 +39,7 @@ public class RecurringCreateCommand extends BotCommand {
         }
         String periodString = strings[strings.length - 2];
         String deadlineString = strings[strings.length - 1];
-        String summary = String.join(" ", Arrays.copyOfRange(strings, 0, strings.length - 3));
+        String summary = String.join(" ", Arrays.copyOfRange(strings, 0, strings.length - 2));
 
         try {
             Instant deadline = Instant.parse(deadlineString);
