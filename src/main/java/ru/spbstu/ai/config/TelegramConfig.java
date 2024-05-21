@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.longpolling.BotSession;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -29,7 +28,7 @@ public class TelegramConfig {
     TaskCommand task;
 
     @Autowired
-    CreateTaskCommand createTask;
+    TaskCreateCommand createTask;
 
     @Autowired
     TaskDeadlineCommand taskDeadline;
