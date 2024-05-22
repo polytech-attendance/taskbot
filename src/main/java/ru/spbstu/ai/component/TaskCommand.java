@@ -34,7 +34,7 @@ public class TaskCommand extends BotCommand {
     UserService users;
 
     public TaskCommand() {
-        super("task", "Show all tasks. Or use /task <id>.");
+        super("task", "Show all tasks.");
     }
 
     @Override
