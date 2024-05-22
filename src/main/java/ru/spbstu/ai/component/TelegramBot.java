@@ -46,7 +46,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private ScheduledExecutorService scheduler;
 
-    private static final int BACKGROUND_TASK_PERIOD = 10;
+    private static final int BACKGROUND_TASK_PERIOD = 120;
 
     public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName) {
         super(client, true, () -> botName);
