@@ -11,6 +11,7 @@ public interface TaskService {
     Mono<Void> createTask(int userId, String summary, Instant deadline, Duration estimatedTime);
     Mono<Void> addSpentTime(int userId, int taskId, Duration spent);
     Mono<Void> markDone(int userId, int taskId);
+    Mono<Task> getTaskById(int userId, int taskId);
 
     Mono<Void> markInProgress(int userId, int taskId);
     Mono<Void> setDeadline(int userId, int taskId, Instant deadline);

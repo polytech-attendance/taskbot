@@ -49,6 +49,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Mono<Task> getTaskById(int userId, int taskId) {
+        return Flux.from(
+                ctx.select(asterisk()).from(TASK)
+                        .where(TASK.OWNER_ID.eq(userId)
+                                .and(TASK.TASK_ID.eq(taskId)))
+        ).map(x -> new Task(x.get(TASK.TASK_ID),
+                x.get(TASK.SUMMARY),
+                x.get(TASK.DEADLINE).toInstant(),
+                TaskStatus.of(x.get(TASK.STATUS)),
+                x.get(TASK.ESTIMATED_TIME).toDuration(),
+                x.get(TASK.SPENT_TIME).toDuration())).singleOrEmpty();
+    }
+
+    @Override
     public Mono<Void> markInProgress(int userId, int taskId) {
         return Mono.from(
                 ctx.update(TASK).set(TASK.STATUS, 0)
