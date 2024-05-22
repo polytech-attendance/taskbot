@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
+import ru.spbstu.ai.utils.MarkupTask;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -75,23 +76,7 @@ public class TaskCommand extends BotCommand {
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, Task task) {
         SendMessage message = new SendMessage(chatId.toString(), task.toHumanReadableString());
-
-        InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
-        doneButton.setCallbackData("done task " + task.id());
-
-        // Emoji clocks
-        InlineKeyboardButton inProgressButton = new InlineKeyboardButton("IN PROGRESS \uD83D\uDD53");
-        inProgressButton.setCallbackData("in_progress task " + task.id());
-
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
-        row1.add(doneButton);
-        row1.add(inProgressButton);
-
-        List<InlineKeyboardRow> rows = new ArrayList<>();
-        rows.add(new InlineKeyboardRow(row1));
-
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
-        message.setReplyMarkup(markup);
+        message.setReplyMarkup(MarkupTask.markupForTask(task));
 
         try {
             telegramClient.execute(message);
