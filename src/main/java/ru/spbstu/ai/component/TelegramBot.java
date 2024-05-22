@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTelegramBot;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
@@ -39,6 +41,9 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             System.out.println("Callback query: " + update.getCallbackQuery().getData());
 
             Long userId = update.getCallbackQuery().getFrom().getId();
+            int messageId = update.getCallbackQuery().getMessage().getMessageId();
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+
             users.getUser(userId)
                     .map(user -> user.userId())
                     .doOnSuccess(ownerId -> {
@@ -64,12 +69,28 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                     {
                                         tasks.markInProgress(ownerId.intValue(), id).subscribe();
                                     }
+
+                                    tasks.getTaskById(ownerId.intValue(), id).subscribe(task -> {
+                                        String newText = task.toHumanReadableString();
+                                        EditMessageText editMessage = EditMessageText.builder()
+                                                .chatId(chatId) // Установите идентификатор чата
+                                                .messageId(messageId) // Установите идентификатор сообщения
+                                                .text(newText)
+                                                .build();
+                                                // TODO: Add .replyMarkup() here.
+                                        try {
+                                            telegramClient.execute(editMessage);
+                                        } catch (TelegramApiException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    });
+
                                 }
                             }
                             else if (callbackQueryData.length == 3) {
                                 var id = Integer.parseInt(callbackQueryData[2]);
                                 if(callbackQueryData[1].equals("done")) {
-                                recurrings.markDone(ownerId.intValue(), id).subscribe();
+                                    recurrings.markDone(ownerId.intValue(), id).subscribe();
                                 }
                                 else
                                 {
