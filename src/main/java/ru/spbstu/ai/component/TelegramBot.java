@@ -12,7 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.spbstu.ai.entity.RecurringTask;
 import ru.spbstu.ai.entity.Task;
+import ru.spbstu.ai.entity.TaskStatus;
 import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
@@ -43,14 +45,62 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private ScheduledExecutorService scheduler;
 
-    int CHECK_DEADLINES_PERIOD_SECONDS = 120;
+    private static final int CHECK_DEADLINES_PERIOD_SECONDS = 10;
+    private static final int CHECK_UPDATES_PERIOD_SECONDS = 10;
+    private static final int RESET_RECURRINGS_PERIOD_SECONDS = 10;
 
     public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName) {
         super(client, true, () -> botName);
         scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::checkForDeadlines, 0, CHECK_DEADLINES_PERIOD_SECONDS, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::backgroundTasks, 0, RESET_RECURRINGS_PERIOD_SECONDS, TimeUnit.SECONDS);
         usersChats = new ConcurrentHashMap<>();
     }
+
+    private void backgroundTasks() {
+        System.out.println("Background tasks:");
+        System.out.println("Reset recurrings:");
+        resetRecurrings();
+        System.out.println("Deadlines:");
+        checkForDeadlines();
+        System.out.println("Updates:");
+        checkForUpdates();
+    }
+
+    private void resetRecurrings() {
+        for (Map.Entry<Integer, Long> entry : usersChats.entrySet()) {
+            Integer telegramId = entry.getKey();
+            Long chatId = entry.getValue();
+
+            users.getUser(telegramId.longValue()).subscribe(
+                    user -> {
+                        recurrings.getRecurrings((int) user.userId())
+                                .collectList()
+                                .doOnSuccess(tasksList -> {
+                                    for (RecurringTask task : tasksList) {
+                                        Instant now = Instant.now();
+                                        Instant period = task.start().plus(task.period());
+                                        if (task.status().equals(TaskStatus.DONE) &&
+                                                now.isAfter(period)) {
+                                            // Should update and notify
+                                            recurrings.markInProgress((int) user.userId(), Math.toIntExact(task.id())).subscribe();
+                                            SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
+                                            try {
+                                                telegramClient.execute(notify);
+                                            } catch (TelegramApiException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    }
+                                }).subscribe();
+                    }
+            );
+        }
+        System.out.println("Update recurrings...");
+    }
+
+
+
+
 
     private void checkForDeadlines() {
         for (Map.Entry<Integer, Long> entry : usersChats.entrySet()) {
@@ -80,6 +130,37 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
             System.out.println("Checking deadlines...");
         }
+    }
+
+    private void checkForUpdates() {
+        for (Map.Entry<Integer, Long> entry : usersChats.entrySet()) {
+            Integer telegramId = entry.getKey();
+            Long chatId = entry.getValue();
+
+            users.getUser(telegramId.longValue()).subscribe(
+                    user -> {
+                        recurrings.getRecurrings((int) user.userId())
+                                .collectList()
+                                .doOnSuccess(tasksList -> {
+                                    for (RecurringTask task : tasksList) {
+                                        Instant now = Instant.now();
+                                        Instant period = task.start().plus(task.period());
+                                        if (task.status().equals(TaskStatus.IN_PROGRESS) &&
+                                                now.isAfter(period)) {
+
+                                            SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
+                                            try {
+                                                telegramClient.execute(notify);
+                                            } catch (TelegramApiException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    }
+                                }).subscribe();
+                    }
+            );
+        }
+        System.out.println("Check updates...");
     }
 
     @Override

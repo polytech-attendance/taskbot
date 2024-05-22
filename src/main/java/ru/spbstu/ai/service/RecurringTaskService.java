@@ -14,7 +14,7 @@ public interface RecurringTaskService {
     Mono<RecurringTask> getById(int userId, int taskId);
 
     Mono<Void> markDone(int userId, int taskId);
-    Mono<RecurringTask> markInProgress(int userId, int taskId);
+    Mono<Void> markInProgress(int userId, int taskId);
     Mono<Void> deleteRecurring(int userId, int taskId);
 
     Mono<Void> setSummary(int userId, int taskId, String summary);

@@ -85,8 +85,11 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
 
 
     @Override
-    public Mono<RecurringTask> markInProgress(int userId, int taskId) {
-        return null;
+    public Mono<Void> markInProgress(int userId, int taskId) {
+        return Mono.from(
+                ctx.update(RECURRING_TASK).set(RECURRING_TASK.STATUS, 0).set(RECURRING_TASK.START, Instant.now().atOffset(ZoneOffset.UTC))
+                        .where(RECURRING_TASK.RECURRING_TASK_ID.eq(taskId).and(RECURRING_TASK.OWNER_ID.eq(userId)))
+        ).then();
     }
 
     @Override
