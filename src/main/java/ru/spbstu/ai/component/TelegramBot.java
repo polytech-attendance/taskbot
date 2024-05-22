@@ -18,6 +18,7 @@ import ru.spbstu.ai.entity.TaskStatus;
 import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
+import ru.spbstu.ai.utils.MarkupTask;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -207,8 +208,8 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                                 .chatId(chatId)
                                                 .messageId(messageId)
                                                 .text(newText)
+                                                .replyMarkup(MarkupTask.markupForTask(task))
                                                 .build();
-                                                // TODO: Add .replyMarkup() here.
                                         try {
                                             telegramClient.execute(editMessage);
                                         } catch (TelegramApiException e) {
