@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTelegramBot;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
@@ -73,8 +74,8 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                     tasks.getTaskById(ownerId.intValue(), id).subscribe(task -> {
                                         String newText = task.toHumanReadableString();
                                         EditMessageText editMessage = EditMessageText.builder()
-                                                .chatId(chatId) // Установите идентификатор чата
-                                                .messageId(messageId) // Установите идентификатор сообщения
+                                                .chatId(chatId)
+                                                .messageId(messageId)
                                                 .text(newText)
                                                 .build();
                                                 // TODO: Add .replyMarkup() here.
@@ -91,10 +92,35 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                 var id = Integer.parseInt(callbackQueryData[2]);
                                 if(callbackQueryData[1].equals("done")) {
                                     recurrings.markDone(ownerId.intValue(), id).subscribe();
+                                    recurrings.getById(ownerId.intValue(), id).subscribe(task -> {
+                                        String newText = task.toHumanReadableString();
+                                        EditMessageText editMessage = EditMessageText.builder()
+                                                .chatId(chatId)
+                                                .messageId(messageId)
+                                                .text(newText)
+                                                .build();
+                                        // TODO: Add .replyMarkup() here.
+                                        try {
+                                            telegramClient.execute(editMessage);
+                                        } catch (TelegramApiException e) {
+                                            throw new RuntimeException(e);
+                                        }
+
+                                    });
                                 }
                                 else
                                 {
                                     recurrings.deleteRecurring(ownerId.intValue(), id).subscribe();
+                                    EditMessageText editMessage = EditMessageText.builder()
+                                            .chatId(chatId)
+                                            .messageId(messageId)
+                                            .text("Task has been deleted.")
+                                            .build();
+                                    try {
+                                        telegramClient.execute(editMessage);
+                                    } catch (TelegramApiException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             }
                             else {

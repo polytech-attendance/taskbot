@@ -61,6 +61,20 @@ public class RecurringTaskServiceImpl implements RecurringTaskService {
     }
 
     @Override
+    public Mono<RecurringTask> getById(int userId, int taskId) {
+        return Flux.from(
+                ctx.select(asterisk()).from(RECURRING_TASK)
+                        .where(RECURRING_TASK.OWNER_ID.eq(userId))
+                        .and(RECURRING_TASK.RECURRING_TASK_ID.eq(taskId))
+        ).map(x -> new RecurringTask(Long.valueOf(x.get(RECURRING_TASK.RECURRING_TASK_ID)),
+                x.get(RECURRING_TASK.SUMMARY),
+                x.get(RECURRING_TASK.START).toInstant(),
+                x.get(RECURRING_TASK.PERIOD).toDuration(),
+                x.get(RECURRING_TASK.FINISH).toInstant(),
+                TaskStatus.of(x.get(RECURRING_TASK.STATUS)))).singleOrEmpty();
+    }
+
+    @Override
     public Mono<Void> markDone(int userId, int taskId) {
         return Mono.from(
                 ctx.update(RECURRING_TASK).set(RECURRING_TASK.STATUS, 1).set(RECURRING_TASK.START, Instant.now().atOffset(ZoneOffset.UTC))
