@@ -45,14 +45,12 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private ScheduledExecutorService scheduler;
 
-    private static final int CHECK_DEADLINES_PERIOD_SECONDS = 10;
-    private static final int CHECK_UPDATES_PERIOD_SECONDS = 10;
-    private static final int RESET_RECURRINGS_PERIOD_SECONDS = 10;
+    private static final int BACKGROUND_TASK_PERIOD = 10;
 
     public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName) {
         super(client, true, () -> botName);
         scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::backgroundTasks, 0, RESET_RECURRINGS_PERIOD_SECONDS, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::backgroundTasks, 0, BACKGROUND_TASK_PERIOD, TimeUnit.SECONDS);
         usersChats = new ConcurrentHashMap<>();
     }
 
