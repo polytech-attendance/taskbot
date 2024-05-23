@@ -10,33 +10,39 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import reactor.core.publisher.Mono;
 import ru.spbstu.ai.service.UserService;
+
+import java.util.Collection;
+import java.util.List;
 
 @Component
 public class HelpCommand extends BotCommand {
 
-    private final ICommandRegistry commandRegistry;
+
     @Autowired
     UserService users;
 
-    public HelpCommand(ICommandRegistry commandRegistry) {
+    private List<IBotCommand> commands;
+
+    @Autowired
+    public HelpCommand(List<IBotCommand> commandList) {
         super("help", "Get all the commands this bot provides");
-        this.commandRegistry = commandRegistry;
+        this.commands = commandList;
     }
 
     @Override
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
-        StringBuilder helpMessageBuilder = new StringBuilder("<b>Help</b>\n");
+        StringBuilder helpMessageBuilder = new StringBuilder("Help\n");
         helpMessageBuilder.append("These are the registered commands for this Bot:\n\n");
 
-        for (IBotCommand botCommand : commandRegistry.getRegisteredCommands()) {
+        for (IBotCommand botCommand : commands) {
             helpMessageBuilder.append(botCommand.toString()).append("\n\n");
         }
 
+
+
         SendMessage helpMessage = new SendMessage(chat.getId().toString(), helpMessageBuilder.toString());
         helpMessage.enableHtml(true);
-
         try {
             telegramClient.execute(helpMessage);
         } catch (TelegramApiException e) {
