@@ -28,7 +28,7 @@ public class RecurringSummaryCommand extends BotCommand {
     UserService users;
 
     public RecurringSummaryCommand() {
-        super("recurring_summary", "Edit summary for existing recurring task. Use next: /recurring_summary <Recurring Id> <New summary> (/reschedule 10 Read big books");
+        super("recurring_summary", "Edit summary for existing recurring task. Use next: /recurring_summary [Recurring Id] [New summary] (/reschedule 10 Read big books");
     }
 
     @Override

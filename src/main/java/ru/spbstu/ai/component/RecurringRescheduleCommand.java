@@ -28,7 +28,7 @@ public class RecurringRescheduleCommand extends BotCommand {
     UserService users;
 
     public RecurringRescheduleCommand() {
-        super("reschedule", "Reschedule existing recurring task. Use next: /reschedule <Recurring Id> <hourly\\daily\\weekly\\monthly> <Deadline> (/reschedule 10 daily 2024-05-30T12:00:00Z");
+        super("reschedule", "Reschedule existing recurring task. Use next: /reschedule [Recurring Id] [hourly\\daily\\weekly\\monthly] [Deadline] (/reschedule 10 daily 2024-05-30T12:00:00Z");
     }
 
     @Override

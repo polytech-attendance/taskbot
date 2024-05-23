@@ -28,7 +28,7 @@ public class RecurringCreateCommand extends BotCommand {
     UserService users;
 
     public RecurringCreateCommand() {
-        super("recurring_create", "Creating new recurring task. Use next: /recurring_create <Summary> <hourly\\daily\\weekly\\monthly> <Deadline> (/recurring_create Reading book daily 2024-05-24T12:00:00Z");
+        super("recurring_create", "Creating new recurring task. Use next: /recurring_create [Summary] [hourly\\daily\\weekly\\monthly] [Deadline] (/recurring_create Reading book daily 2024-05-24T12:00:00Z");
     }
 
     @Override

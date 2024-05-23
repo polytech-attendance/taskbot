@@ -31,7 +31,7 @@ public class TaskSpentTime extends BotCommand {
     UserService users;
 
     public TaskSpentTime() {
-        super("task_spenttime", "Add spent time for task. Use next: /task_spenttime <Task_id> <Duration> (/create_task 3 hours)");
+        super("task_spenttime", "Add spent time for task. Use next: /task_spenttime [Task_id] [Duration] (/create_task 3 hours)");
     }
 
     @Override

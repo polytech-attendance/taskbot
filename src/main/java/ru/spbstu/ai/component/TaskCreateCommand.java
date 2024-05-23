@@ -27,7 +27,7 @@ public class TaskCreateCommand extends BotCommand {
     UserService users;
 
     public TaskCreateCommand() {
-        super("task_create", "Creating new task. Use next: /task_create <Summary> <Deadline> <Estimated time> (/task_create Driving exam 2023-05-12T12:00:00Z 10 hours)");
+        super("task_create", "Creating new task. Use next: /task_create [Summary] [Deadline] [Estimated time] (/task_create Driving exam 2023-05-12T12:00:00Z 10 hours)");
     }
 
     @Override

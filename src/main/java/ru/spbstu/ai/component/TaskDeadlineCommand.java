@@ -30,7 +30,7 @@ public class TaskDeadlineCommand extends BotCommand {
     UserService users;
 
     public TaskDeadlineCommand() {
-        super("task_deadline", "Change deadline for task. Use next: /task_deadline <Task_id> <Deadline> (/create_task 2023-05-12T12:00:00Z)");
+        super("task_deadline", "Change deadline for task. Use next: /task_deadline [Task_id] [Deadline] (/create_task 2023-05-12T12:00:00Z)");
     }
 
     @Override
