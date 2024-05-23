@@ -15,6 +15,7 @@ import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.MarkupTask;
+import ru.spbstu.ai.utils.SendMessageWithHtml;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -53,26 +54,18 @@ public class TaskCommand extends BotCommand {
                     return tasks.getByDeadline((int) foundUserId.userId(), monthAgoInstant, monthLaterInstant)
                             .collectList()
                             .doOnSuccess(taskList -> {
-                                sendMessageToChat(telegramClient, chat.getId(), "Total amout of task: " + "**" + taskList.size() + "**");
+                                SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
                                 for (Task task : taskList) {
                                     sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
                                 }
                             })
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
+                            .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
                 })
                 .subscribe();
 
 
     }
 
-    private void sendMessageToChat(TelegramClient telegramClient, Long chatId, String message) {
-        try {
-            SendMessage msg = new SendMessage(chatId.toString(), message);
-            telegramClient.execute(msg);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException("Error sending message to chat", e);
-        }
-    }
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, Task task) {
         SendMessage message = new SendMessage(chatId.toString(), task.toHumanReadableString());

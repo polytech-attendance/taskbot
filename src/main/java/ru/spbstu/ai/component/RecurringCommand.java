@@ -17,6 +17,7 @@ import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.DurationParser;
+import ru.spbstu.ai.utils.SendMessageWithHtml;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -46,25 +47,15 @@ public class RecurringCommand extends BotCommand {
                     return recurring.getRecurrings((int) foundUserId.userId())
                             .collectList()
                             .doOnSuccess(recurringList -> {
-                                sendMessageToChat(telegramClient, chat.getId(), "Total amount of recurring task: " + "**" + recurringList.size() + "**");
+                                SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amount of recurring task: " + "<b>" + recurringList.size() + "</b>");
                                 for (RecurringTask recurringTask : recurringList) {
                                     sendTaskMessageWithButtons(telegramClient, chat.getId(), recurringTask);
                                 }
                             })
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
+                            .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
                 })
                 .subscribe();
 
-    }
-
-
-
-    private void sendMessageToChat(TelegramClient telegramClient, Long chatId, String message) {
-        try {
-            telegramClient.execute(new SendMessage(chatId.toString(), message));
-        } catch (TelegramApiException e) {
-            throw new RuntimeException("Error sending message to chat", e);
-        }
     }
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, RecurringTask task) {
