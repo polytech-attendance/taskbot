@@ -86,7 +86,11 @@ recurring tasks and tasks deadlines:
 
 # Deploy
 
--- TODO
+```sh
+mvn package
+docker compose build
+docker compose up
+```
 
 ## TODO:
 

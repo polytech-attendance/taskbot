@@ -47,6 +47,6 @@ public class StartCommand extends BotCommand {
                                     // TODO: Create log info output, about creating user
                                 });
                     }
-                });
+                }).block();
     }
 }
