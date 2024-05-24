@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.ICommandRegistry;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -16,16 +17,14 @@ import java.util.List;
 @Component
 public class HelpCommand extends BotCommand {
 
+    private final UserService users;
 
-    @Autowired
-    UserService users;
+    private final ICommandRegistry commandRegistry;
 
-    private List<IBotCommand> commands;
-
-    @Autowired
-    public HelpCommand(List<IBotCommand> commandList) {
+    public HelpCommand(UserService users, ICommandRegistry commandRegistry) {
         super("help", "Get all the commands this bot provides");
-        this.commands = commandList;
+        this.users = users;
+        this.commandRegistry = commandRegistry;
     }
 
     @Override
@@ -33,7 +32,7 @@ public class HelpCommand extends BotCommand {
         StringBuilder helpMessageBuilder = new StringBuilder("Help\n");
         helpMessageBuilder.append("These are the registered commands for this Bot:\n\n");
 
-        for (IBotCommand botCommand : commands) {
+        for (IBotCommand botCommand : commandRegistry.getRegisteredCommands()) {
             helpMessageBuilder.append(botCommand.toString()).append("\n\n");
         }
 

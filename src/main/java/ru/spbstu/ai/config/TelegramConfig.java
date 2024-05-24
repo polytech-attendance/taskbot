@@ -52,6 +52,10 @@ public class TelegramConfig {
     RecurringSummaryCommand recurringSummary;
 
     @Autowired
+    HelpCommand help;
+
+    // actually a circular dependency :(
+    @Autowired
     TelegramBot bot;
 
     @Bean
@@ -70,8 +74,7 @@ public class TelegramConfig {
         bot.register(recurring);
         bot.register(reschedule);
         bot.register(recurringSummary);
-        bot.register(new HelpCommand(bot.getRegisteredCommands().stream().toList()));
-
+        bot.register(help);
         return botsApplication.registerBot(env.getProperty("token"), bot);
     }
 

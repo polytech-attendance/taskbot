@@ -19,14 +19,14 @@ import java.time.format.DateTimeParseException;
 @Component
 public class RecurringRescheduleCommand extends BotCommand {
 
-    @Autowired
-    RecurringTaskService recurring;
+    private final RecurringTaskService recurring;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public RecurringRescheduleCommand() {
+    public RecurringRescheduleCommand(RecurringTaskService recurring, UserService users) {
         super("reschedule", "Reschedule existing recurring task. Use next: /reschedule [Recurring Id] [hourly\\daily\\weekly\\monthly] [Deadline] (/reschedule 10 daily 2024-05-30T12:00:00Z");
+        this.recurring = recurring;
+        this.users = users;
     }
 
     @Override

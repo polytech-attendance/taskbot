@@ -21,14 +21,14 @@ import java.time.ZoneOffset;
 @Component
 public class TaskCommand extends BotCommand {
 
-    @Autowired
-    TaskService tasks;
+    private final TaskService tasks;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public TaskCommand() {
+    public TaskCommand(TaskService tasks, UserService users) {
         super("task", "Show all tasks.");
+        this.tasks = tasks;
+        this.users = users;
     }
 
     @Override

@@ -29,14 +29,11 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TelegramBot extends CommandLongPollingTelegramBot {
 
-    @Autowired
-    TaskService tasks;
+    private final TaskService tasks;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    @Autowired
-    RecurringTaskService recurrings;
+    private final RecurringTaskService recurrings;
 
     private ConcurrentHashMap<Integer, Long> usersChats;
 
@@ -44,11 +41,14 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private static final int BACKGROUND_TASK_PERIOD = 120;
 
-    public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName) {
+    public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName, TaskService tasks, UserService users, RecurringTaskService recurrings) {
         super(client, true, () -> botName);
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::backgroundTasks, 0, BACKGROUND_TASK_PERIOD, TimeUnit.SECONDS);
         usersChats = new ConcurrentHashMap<>();
+        this.tasks = tasks;
+        this.users = users;
+        this.recurrings = recurrings;
     }
 
     private void backgroundTasks() {

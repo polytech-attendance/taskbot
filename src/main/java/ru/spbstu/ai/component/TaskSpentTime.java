@@ -19,14 +19,14 @@ import java.util.Arrays;
 @Component
 public class TaskSpentTime extends BotCommand {
 
-    @Autowired
-    TaskService tasks;
+    private final TaskService tasks;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public TaskSpentTime() {
+    public TaskSpentTime(TaskService tasks, UserService users) {
         super("task_spenttime", "Add spent time for task. Use next: /task_spenttime [Task_id] [Duration] (/create_task 3 hours)");
+        this.tasks = tasks;
+        this.users = users;
     }
 
     @Override

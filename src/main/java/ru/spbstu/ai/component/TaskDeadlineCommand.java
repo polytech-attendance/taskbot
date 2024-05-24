@@ -17,14 +17,14 @@ import java.time.format.DateTimeParseException;
 @Component
 public class TaskDeadlineCommand extends BotCommand {
 
-    @Autowired
-    TaskService tasks;
+    private final TaskService tasks;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public TaskDeadlineCommand() {
+    public TaskDeadlineCommand(TaskService tasks, UserService users) {
         super("task_deadline", "Change deadline for task. Use next: /task_deadline [Task_id] [Deadline] (/create_task 2023-05-12T12:00:00Z)");
+        this.tasks = tasks;
+        this.users = users;
     }
 
     @Override

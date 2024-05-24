@@ -22,14 +22,14 @@ import java.util.List;
 @Component
 public class RecurringCommand extends BotCommand {
 
-    @Autowired
-    RecurringTaskService recurring;
+    private final RecurringTaskService recurring;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public RecurringCommand() {
+    public RecurringCommand(RecurringTaskService recurring, UserService users) {
         super("recurring", "Get recurring tasks in progress. Use next: /recurring");
+        this.recurring = recurring;
+        this.users = users;
     }
 
     @Override

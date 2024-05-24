@@ -20,14 +20,14 @@ import java.util.Arrays;
 @Component
 public class RecurringCreateCommand extends BotCommand {
 
-    @Autowired
-    RecurringTaskService recurring;
+    private final RecurringTaskService recurring;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public RecurringCreateCommand() {
+    public RecurringCreateCommand(RecurringTaskService recurring, UserService users) {
         super("recurring_create", "Creating new recurring task. Use next: /recurring_create [Summary] [hourly\\daily\\weekly\\monthly] [Deadline] (/recurring_create Reading book daily 2024-05-24T12:00:00Z");
+        this.recurring = recurring;
+        this.users = users;
     }
 
     @Override

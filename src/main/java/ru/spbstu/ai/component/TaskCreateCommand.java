@@ -20,14 +20,14 @@ import java.util.Arrays;
 @Component
 public class TaskCreateCommand extends BotCommand {
 
-    @Autowired
-    TaskService tasks;
+    private final TaskService tasks;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public TaskCreateCommand() {
+    public TaskCreateCommand(TaskService tasks, UserService users) {
         super("task_create", "Creating new task. Use next: /task_create [Summary] [Deadline] [Estimated time] (/task_create Driving exam 2023-05-12T12:00:00Z 10 hours)");
+        this.tasks = tasks;
+        this.users = users;
     }
 
     @Override

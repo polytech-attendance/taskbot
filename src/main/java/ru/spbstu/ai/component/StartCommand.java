@@ -14,11 +14,11 @@ import ru.spbstu.ai.service.UserService;
 @Component
 public class StartCommand extends BotCommand {
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public StartCommand() {
+    public StartCommand(UserService users) {
         super("start", "Register in the bot.");
+        this.users = users;
     }
 
     @Override

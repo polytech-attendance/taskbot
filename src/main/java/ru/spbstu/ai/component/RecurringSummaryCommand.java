@@ -17,14 +17,14 @@ import java.util.Arrays;
 @Component
 public class RecurringSummaryCommand extends BotCommand {
 
-    @Autowired
-    RecurringTaskService recurring;
+    private final RecurringTaskService recurring;
 
-    @Autowired
-    UserService users;
+    private final UserService users;
 
-    public RecurringSummaryCommand() {
+    public RecurringSummaryCommand(RecurringTaskService recurring, UserService users) {
         super("recurring_summary", "Edit summary for existing recurring task. Use next: /recurring_summary [Recurring Id] [New summary] (/reschedule 10 Read big books");
+        this.recurring = recurring;
+        this.users = users;
     }
 
     @Override
