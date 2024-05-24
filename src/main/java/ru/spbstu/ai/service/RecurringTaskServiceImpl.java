@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.spbstu.ai.entity.RecurringTask;
-import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.entity.TaskStatus;
 
 import java.time.Duration;
@@ -15,9 +14,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static org.jooq.impl.DSL.asterisk;
-import static org.jooq.impl.DSL.user;
 import static ru.spbstu.ai.r2dbc.db.tables.RecurringTask.RECURRING_TASK;
-import static ru.spbstu.ai.r2dbc.db.tables.Task.TASK;
 
 @Service
 public class RecurringTaskServiceImpl implements RecurringTaskService {

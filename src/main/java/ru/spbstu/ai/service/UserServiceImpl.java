@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.spbstu.ai.entity.User;
 import ru.spbstu.ai.r2dbc.db.tables.Owner;
-import ru.spbstu.ai.r2dbc.db.tables.records.OwnerRecord;
 
-@Service
+ @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private DSLContext ctx;

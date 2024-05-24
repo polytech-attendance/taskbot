@@ -1,6 +1,5 @@
 package ru.spbstu.ai.config;
 
-import org.h2.command.dml.Help;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.ICommandRegistry;
 import org.telegram.telegrambots.longpolling.BotSession;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -17,7 +15,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.component.*;
 
 import java.util.Collection;
-import java.util.List;
 
 @Configuration
 @PropertySource("classpath:bot.properties")

@@ -1,6 +1,5 @@
 package ru.spbstu.ai.component;
 
-import org.bouncycastle.util.StringList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -9,16 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import reactor.core.publisher.Mono;
-import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.DurationParser;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @Component

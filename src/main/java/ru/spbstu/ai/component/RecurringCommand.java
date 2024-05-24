@@ -12,18 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.RecurringTask;
-import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.service.RecurringTaskService;
-import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
-import ru.spbstu.ai.utils.DurationParser;
 import ru.spbstu.ai.utils.SendMessageWithHtml;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
