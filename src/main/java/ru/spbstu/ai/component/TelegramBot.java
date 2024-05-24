@@ -1,6 +1,5 @@
 package ru.spbstu.ai.component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTelegramBot;
@@ -222,7 +221,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                                                 .messageId(messageId)
                                                 .text(newText)
                                                 .build();
-                                        // TODO: Add .replyMarkup() here.
+                                        // TODO Add .replyMarkup() here.
                                         try {
                                             telegramClient.execute(editMessage);
                                         } catch (TelegramApiException e) {

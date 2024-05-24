@@ -1,6 +1,5 @@
 package ru.spbstu.ai.component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -44,7 +43,7 @@ public class StartCommand extends BotCommand {
                     } else {
                         return users.create(user.getId())
                                 .doOnNext(newUser -> {
-                                    // TODO: Create log info output, about creating user
+                                    // TODO Create log info output, about creating user
                                 });
                     }
                 }).block();

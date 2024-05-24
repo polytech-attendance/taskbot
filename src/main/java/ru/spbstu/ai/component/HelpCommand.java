@@ -1,6 +1,5 @@
 package ru.spbstu.ai.component;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
@@ -10,20 +9,14 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.spbstu.ai.service.UserService;
-
-import java.util.List;
 
 @Component
 public class HelpCommand extends BotCommand {
 
-    private final UserService users;
-
     private final ICommandRegistry commandRegistry;
 
-    public HelpCommand(UserService users, ICommandRegistry commandRegistry) {
+    public HelpCommand(ICommandRegistry commandRegistry) {
         super("help", "Get all the commands this bot provides");
-        this.users = users;
         this.commandRegistry = commandRegistry;
     }
 

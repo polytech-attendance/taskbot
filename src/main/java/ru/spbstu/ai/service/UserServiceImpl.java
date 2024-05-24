@@ -1,18 +1,20 @@
  package ru.spbstu.ai.service;
 
-import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-import ru.spbstu.ai.entity.User;
-import ru.spbstu.ai.r2dbc.db.tables.Owner;
+ import org.jooq.DSLContext;
+ import org.springframework.stereotype.Service;
+ import reactor.core.publisher.Mono;
+ import ru.spbstu.ai.entity.User;
+ import ru.spbstu.ai.r2dbc.db.tables.Owner;
 
  @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private DSLContext ctx;
+    private final DSLContext ctx;
 
-    @Override
+     public UserServiceImpl(DSLContext ctx) {
+         this.ctx = ctx;
+     }
+
+     @Override
     public Mono<User> create(long telegramId) {
         return Mono.from(ctx.insertInto(Owner.OWNER, Owner.OWNER.TELEGRAM_ID).values((int) telegramId))
                 .then(getUser(telegramId));

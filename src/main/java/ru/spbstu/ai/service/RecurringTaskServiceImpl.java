@@ -2,7 +2,6 @@ package ru.spbstu.ai.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.YearToSecond;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,8 +18,11 @@ import static ru.spbstu.ai.r2dbc.db.tables.RecurringTask.RECURRING_TASK;
 @Service
 public class RecurringTaskServiceImpl implements RecurringTaskService {
 
-    @Autowired
-    private DSLContext ctx;
+    private final DSLContext ctx;
+
+    public RecurringTaskServiceImpl(DSLContext ctx) {
+        this.ctx = ctx;
+    }
 
 
     @Override
