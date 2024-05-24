@@ -25,7 +25,6 @@ public class MarkupTask {
         List<InlineKeyboardRow> rows = new ArrayList<>();
         rows.add(new InlineKeyboardRow(row1));
 
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
-        return markup;
+        return new InlineKeyboardMarkup(rows);
     }
 }

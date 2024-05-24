@@ -8,18 +8,13 @@ import java.util.regex.Pattern;
 
 public class DurationParser {
     public static Duration parsePeriod(String input) {
-        switch (input.toLowerCase()) {
-            case "hourly":
-                return Duration.ofHours(1);
-            case "daily":
-                return Duration.ofDays(1);
-            case "weekly":
-                return Duration.ofDays(7);
-            case "monthly":
-                return Duration.ofDays(30);
-            default:
-                throw new IllegalArgumentException("Invalid duration format: " + input);
-        }
+        return switch (input.toLowerCase()) {
+            case "hourly" -> Duration.ofHours(1);
+            case "daily" -> Duration.ofDays(1);
+            case "weekly" -> Duration.ofDays(7);
+            case "monthly" -> Duration.ofDays(30);
+            default -> throw new IllegalArgumentException("Invalid duration format: " + input);
+        };
     }
 
 
@@ -60,17 +55,12 @@ public class DurationParser {
             int value = Integer.parseInt(matcher.group(1));
             String unit = matcher.group(2).toLowerCase();
 
-            switch (unit) {
-                case "day":
-                    duration = duration.plusDays(value);
-                    break;
-                case "hour":
-                    duration = duration.plusHours(value);
-                    break;
-                case "minute":
-                    duration = duration.plusMinutes(value);
-                    break;
-            }
+            duration = switch (unit) {
+                case "day" -> duration.plusDays(value);
+                case "hour" -> duration.plusHours(value);
+                case "minute" -> duration.plusMinutes(value);
+                default -> duration;
+            };
         }
 
         return duration;

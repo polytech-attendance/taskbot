@@ -36,17 +36,15 @@ public class RecurringCommand extends BotCommand {
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
         int telegramId = user.getId().intValue();
         users.getUser(telegramId)
-                .flatMap(foundUserId -> {
-                    return recurring.getRecurrings((int) foundUserId.userId())
-                            .collectList()
-                            .doOnSuccess(recurringList -> {
-                                SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amount of recurring task: " + "<b>" + recurringList.size() + "</b>");
-                                for (RecurringTask recurringTask : recurringList) {
-                                    sendTaskMessageWithButtons(telegramClient, chat.getId(), recurringTask);
-                                }
-                            })
-                            .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
-                })
+                .flatMap(foundUser -> recurring.getRecurrings((int) foundUser.userId())
+                        .collectList()
+                        .doOnSuccess(recurringList -> {
+                            SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amount of recurring task: " + "<b>" + recurringList.size() + "</b>");
+                            for (RecurringTask recurringTask : recurringList) {
+                                sendTaskMessageWithButtons(telegramClient, chat.getId(), recurringTask);
+                            }
+                        })
+                        .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage())))
                 .subscribe();
 
     }

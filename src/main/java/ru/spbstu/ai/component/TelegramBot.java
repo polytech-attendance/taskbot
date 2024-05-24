@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.RecurringTask;
 import ru.spbstu.ai.entity.TaskStatus;
+import ru.spbstu.ai.entity.User;
 import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
 import ru.spbstu.ai.service.UserService;
@@ -35,9 +36,10 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private final RecurringTaskService recurrings;
 
-    private ConcurrentHashMap<Integer, Long> usersChats;
+    // TODO remove this hack and use db
+    private final ConcurrentHashMap<Integer, Long> usersChats;
 
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     private static final int BACKGROUND_TASK_PERIOD = 120;
 
@@ -67,27 +69,25 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             Long chatId = entry.getValue();
 
             users.getUser(telegramId.longValue()).subscribe(
-                    user -> {
-                        recurrings.getRecurrings((int) user.userId())
-                                .collectList()
-                                .doOnSuccess(tasksList -> {
-                                    for (RecurringTask task : tasksList) {
-                                        Instant now = Instant.now();
-                                        Instant period = task.start().plus(task.period());
-                                        if (task.status().equals(TaskStatus.DONE) &&
-                                                now.isAfter(period)) {
-                                            // Should update and notify
-                                            recurrings.markInProgress((int) user.userId(), Math.toIntExact(task.id())).subscribe();
-                                            SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
-                                            try {
-                                                telegramClient.execute(notify);
-                                            } catch (TelegramApiException e) {
-                                                throw new RuntimeException(e);
-                                            }
+                    user -> recurrings.getRecurrings((int) user.userId())
+                            .collectList()
+                            .doOnSuccess(tasksList -> {
+                                for (RecurringTask task : tasksList) {
+                                    Instant now = Instant.now();
+                                    Instant period = task.start().plus(task.period());
+                                    if (task.status().equals(TaskStatus.DONE) &&
+                                            now.isAfter(period)) {
+                                        // Should update and notify
+                                        recurrings.markInProgress((int) user.userId(), Math.toIntExact(task.id())).subscribe();
+                                        SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
+                                        try {
+                                            telegramClient.execute(notify);
+                                        } catch (TelegramApiException e) {
+                                            throw new RuntimeException(e);
                                         }
                                     }
-                                }).subscribe();
-                    }
+                                }
+                            }).subscribe()
             );
         }
         System.out.println("Update recurrings...");
@@ -133,26 +133,24 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             Long chatId = entry.getValue();
 
             users.getUser(telegramId.longValue()).subscribe(
-                    user -> {
-                        recurrings.getRecurrings((int) user.userId())
-                                .collectList()
-                                .doOnSuccess(tasksList -> {
-                                    for (RecurringTask task : tasksList) {
-                                        Instant now = Instant.now();
-                                        Instant period = task.start().plus(task.period());
-                                        if (task.status().equals(TaskStatus.IN_PROGRESS) &&
-                                                now.isAfter(period)) {
+                    user -> recurrings.getRecurrings((int) user.userId())
+                            .collectList()
+                            .doOnSuccess(tasksList -> {
+                                for (RecurringTask task : tasksList) {
+                                    Instant now = Instant.now();
+                                    Instant period = task.start().plus(task.period());
+                                    if (task.status().equals(TaskStatus.IN_PROGRESS) &&
+                                            now.isAfter(period)) {
 
-                                            SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
-                                            try {
-                                                telegramClient.execute(notify);
-                                            } catch (TelegramApiException e) {
-                                                throw new RuntimeException(e);
-                                            }
+                                        SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
+                                        try {
+                                            telegramClient.execute(notify);
+                                        } catch (TelegramApiException e) {
+                                            throw new RuntimeException(e);
                                         }
                                     }
-                                }).subscribe();
-                    }
+                                }
+                            }).subscribe()
             );
         }
         System.out.println("Check updates...");
@@ -173,21 +171,19 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
             users.getUser(userId)
-                    .map(user -> user.userId())
+                    .map(User::userId)
                     .doOnSuccess(ownerId -> {
                         System.out.println("Owner ID: " + ownerId);
                         // DONE, IN_PROGRESS
                         if (callbackQueryData.length >= 1 &&
                                 (callbackQueryData[0].equals("done") || callbackQueryData[0].equals("in_progress") || callbackQueryData[0].equals("recurring"))) {
                             if (callbackQueryData.length >= 3 && !callbackQueryData[0].equals("recurring")) {
-                                String secondElement = callbackQueryData[1];
-                                String thirdElement = callbackQueryData[2];
+                                String type = callbackQueryData[1];
+                                var id = Integer.parseInt(callbackQueryData[2]);
 
-                                System.out.println("Second element: " + secondElement);
-                                System.out.println("Third element: " + thirdElement);
+                                System.out.println("Second element: " + type);
+                                System.out.println("Third element: " + id);
 
-                                var id = Integer.parseInt(thirdElement);
-                                var type = secondElement;
 
                                 if (type.equals("task")) {
                                     if ((callbackQueryData[0].equals("done"))) {
@@ -274,7 +270,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     @Override
     public boolean filter(Message message) {
-        usersChats.put(message.getFrom().getId().intValue(), message.getChatId().longValue());
+        usersChats.put(message.getFrom().getId().intValue(), message.getChatId());
         return super.filter(message);
     }
 }

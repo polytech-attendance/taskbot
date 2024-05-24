@@ -42,17 +42,15 @@ public class TaskCommand extends BotCommand {
         /* Now we will be output tasks with delta [now - delta; now + delta], where delta = 1 month. */
         int telegramId = user.getId().intValue();
         users.getUser(telegramId)
-                .flatMap(foundUserId -> {
-                    return tasks.getByDeadline((int) foundUserId.userId(), monthAgoInstant, monthLaterInstant)
-                            .collectList()
-                            .doOnSuccess(taskList -> {
-                                SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
-                                for (Task task : taskList) {
-                                    sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
-                                }
-                            })
-                            .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()));
-                })
+                .flatMap(foundUser -> tasks.getByDeadline((int) foundUser.userId(), monthAgoInstant, monthLaterInstant)
+                        .collectList()
+                        .doOnSuccess(taskList -> {
+                            SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
+                            for (Task task : taskList) {
+                                sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
+                            }
+                        })
+                        .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage())))
                 .subscribe();
 
 
