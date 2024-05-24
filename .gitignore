@@ -3,9 +3,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# Secrets
-bot.properties
-db.properties
+# Secrets, temporary open secrets
+# bot.properties
+# db.properties
 
 ### IntelliJ IDEA ###
 .idea/
