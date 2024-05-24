@@ -1,3 +1,5 @@
+package ru.spbstu.ai;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.longpolling.BotSession;
 import ru.spbstu.ai.config.DatabaseConfig;
