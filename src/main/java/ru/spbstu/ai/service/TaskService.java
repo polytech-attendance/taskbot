@@ -8,13 +8,13 @@ import java.time.Duration;
 import java.time.Instant;
 
 public interface TaskService {
-    Mono<Void> createTask(int userId, String summary, Instant deadline, Duration estimatedTime);
-    Mono<Void> addSpentTime(int userId, int taskId, Duration spent);
-    Mono<Void> markDone(int userId, int taskId);
-    Mono<Task> getTaskById(int userId, int taskId);
+    Mono<Void> createTask(int telegramUserId, String summary, Instant deadline, Duration estimatedTime);
+    Mono<Void> addSpentTime(int telegramUserId, int taskId, Duration spent);
+    Mono<Void> markDone(int telegramUserId, int taskId);
+    Mono<Task> getTaskById(int telegramUserId, int taskId);
 
-    Mono<Void> markInProgress(int userId, int taskId);
-    Mono<Void> setDeadline(int userId, int taskId, Instant deadline);
+    Mono<Void> markInProgress(int telegramUserId, int taskId);
+    Mono<Void> setDeadline(int telegramUserId, int taskId, Instant deadline);
 
-    Flux<Task> getByDeadline(int userId, Instant from, Instant to);
+    Flux<Task> getByDeadline(int telegramUserId, Instant from, Instant to);
 }

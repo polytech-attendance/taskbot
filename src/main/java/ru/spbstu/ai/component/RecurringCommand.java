@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.RecurringTask;
 import ru.spbstu.ai.service.RecurringTaskService;
-import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.SendMessageWithHtml;
 
 import java.util.ArrayList;
@@ -23,29 +22,24 @@ public class RecurringCommand extends BotCommand {
 
     private final RecurringTaskService recurring;
 
-    private final UserService users;
-
-    public RecurringCommand(RecurringTaskService recurring, UserService users) {
+    public RecurringCommand(RecurringTaskService recurring) {
         super("recurring", "Get recurring tasks in progress. Use next: /recurring");
         this.recurring = recurring;
-        this.users = users;
     }
 
     @Override
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
         int telegramId = user.getId().intValue();
-        users.getUser(telegramId)
-                .flatMap(foundUser -> recurring.getRecurrings((int) foundUser.userId())
-                        .collectList()
-                        .doOnSuccess(recurringList -> {
-                            SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amount of recurring task: " + "<b>" + recurringList.size() + "</b>");
-                            for (RecurringTask recurringTask : recurringList) {
-                                sendTaskMessageWithButtons(telegramClient, chat.getId(), recurringTask);
-                            }
-                        })
-                        .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage())))
+        recurring.getRecurrings(telegramId)
+                .collectList()
+                .doOnSuccess(recurringList -> {
+                    SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amount of recurring task: " + "<b>" + recurringList.size() + "</b>");
+                    for (RecurringTask recurringTask : recurringList) {
+                        sendTaskMessageWithButtons(telegramClient, chat.getId(), recurringTask);
+                    }
+                })
+                .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()))
                 .subscribe();
-
     }
 
     public void sendTaskMessageWithButtons(TelegramClient telegramClient, Long chatId, RecurringTask task) {

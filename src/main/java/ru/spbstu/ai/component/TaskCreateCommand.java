@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.TaskService;
-import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.DurationParser;
 
 import java.time.Duration;
@@ -21,12 +20,9 @@ public class TaskCreateCommand extends BotCommand {
 
     private final TaskService tasks;
 
-    private final UserService users;
-
-    public TaskCreateCommand(TaskService tasks, UserService users) {
+    public TaskCreateCommand(TaskService tasks) {
         super("task_create", "Creating new task. Use next: /task_create [Summary] [Deadline] [Estimated time] (/task_create Driving exam 2023-05-12T12:00:00Z 10 hours)");
         this.tasks = tasks;
-        this.users = users;
     }
 
     @Override
@@ -43,11 +39,9 @@ public class TaskCreateCommand extends BotCommand {
             Instant deadline = Instant.parse(deadlineString);
             Duration estimatedTime = DurationParser.parse(estimatedTimeString);
             int telegramId = user.getId().intValue();
-            users.getUser(telegramId)
-                    .flatMap(foundUserId -> tasks.createTask((int) foundUserId.userId(), summary, deadline, estimatedTime)
-                            .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task has been created."))
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task creation ended with error: " + error.getMessage()))
-                            .then())
+            tasks.createTask(telegramId, summary, deadline, estimatedTime)
+                    .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task has been created."))
+                    .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task creation ended with error: " + error.getMessage()))
                     .subscribe();
 
         } catch (DateTimeParseException e) {

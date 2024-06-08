@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.TaskService;
-import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.DurationParser;
 
 import java.time.Duration;
@@ -20,12 +19,9 @@ public class TaskSpentTime extends BotCommand {
 
     private final TaskService tasks;
 
-    private final UserService users;
-
-    public TaskSpentTime(TaskService tasks, UserService users) {
+    public TaskSpentTime(TaskService tasks) {
         super("task_spenttime", "Add spent time for task. Use next: /task_spenttime [Task_id] [Duration] (/create_task 3 hours)");
         this.tasks = tasks;
-        this.users = users;
     }
 
     @Override
@@ -40,11 +36,9 @@ public class TaskSpentTime extends BotCommand {
         try {
             Duration spentTime = DurationParser.parse(durationString);
             int telegramId = user.getId().intValue();
-            users.getUser(telegramId)
-                    .flatMap(foundUserId -> tasks.addSpentTime((int) foundUserId.userId(), task_id, spentTime)
-                            .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task spent time increase on " + durationString))
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task update ended with error: " + error.getMessage()))
-                            .then())
+            tasks.addSpentTime(telegramId, task_id, spentTime)
+                    .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task spent time increase on " + durationString))
+                    .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task update ended with error: " + error.getMessage()))
                     .subscribe();
 
         } catch (DateTimeParseException e) {

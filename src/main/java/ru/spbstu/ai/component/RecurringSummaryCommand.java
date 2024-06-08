@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.RecurringTaskService;
-import ru.spbstu.ai.service.UserService;
 
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -18,12 +17,9 @@ public class RecurringSummaryCommand extends BotCommand {
 
     private final RecurringTaskService recurring;
 
-    private final UserService users;
-
-    public RecurringSummaryCommand(RecurringTaskService recurring, UserService users) {
+    public RecurringSummaryCommand(RecurringTaskService recurring) {
         super("recurring_summary", "Edit summary for existing recurring task. Use next: /recurring_summary [Recurring Id] [New summary] (/reschedule 10 Read big books");
         this.recurring = recurring;
-        this.users = users;
     }
 
     @Override
@@ -38,18 +34,15 @@ public class RecurringSummaryCommand extends BotCommand {
 
         try {
             int telegramId = user.getId().intValue();
-            users.getUser(telegramId)
-                    .flatMap(foundUserId -> recurring.setSummary((int) foundUserId.userId(), recurringId, summary)
-                            .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task has been updated."))
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task updating ended with error: " + error.getMessage()))
-                            .then())
+            recurring.setSummary(telegramId, recurringId, summary)
+                    .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task has been updated."))
+                    .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task updating ended with error: " + error.getMessage()))
                     .subscribe();
 
         } catch (DateTimeParseException e) {
             sendMessageToChat(telegramClient, chat.getId(), "Invalid date format for deadline. Use ISO format (yyyy-MM-ddTHH:mm:ssZ)");
         }
     }
-
 
 
     private void sendMessageToChat(TelegramClient telegramClient, Long chatId, String message) {

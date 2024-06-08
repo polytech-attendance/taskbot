@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.TaskService;
-import ru.spbstu.ai.service.UserService;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -18,12 +17,9 @@ public class TaskDeadlineCommand extends BotCommand {
 
     private final TaskService tasks;
 
-    private final UserService users;
-
-    public TaskDeadlineCommand(TaskService tasks, UserService users) {
+    public TaskDeadlineCommand(TaskService tasks) {
         super("task_deadline", "Change deadline for task. Use next: /task_deadline [Task_id] [Deadline] (/create_task 2023-05-12T12:00:00Z)");
         this.tasks = tasks;
-        this.users = users;
     }
 
     @Override
@@ -38,11 +34,9 @@ public class TaskDeadlineCommand extends BotCommand {
         try {
             Instant deadline = Instant.parse(deadlineString);
             int telegramId = user.getId().intValue();
-            users.getUser(telegramId)
-                    .flatMap(foundUserId -> tasks.setDeadline((int) foundUserId.userId(), task_id, deadline)
-                            .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task deadline has changed."))
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task update ended with error: " + error.getMessage()))
-                            .then())
+            tasks.setDeadline(telegramId, task_id, deadline)
+                    .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Task deadline has changed."))
+                    .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Task update ended with error: " + error.getMessage()))
                     .subscribe();
 
         } catch (DateTimeParseException e) {

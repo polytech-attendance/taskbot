@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.Task;
 import ru.spbstu.ai.service.TaskService;
-import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.MarkupTask;
 import ru.spbstu.ai.utils.SendMessageWithHtml;
 
@@ -22,12 +21,9 @@ public class TaskCommand extends BotCommand {
 
     private final TaskService tasks;
 
-    private final UserService users;
-
-    public TaskCommand(TaskService tasks, UserService users) {
+    public TaskCommand(TaskService tasks) {
         super("task", "Show all tasks.");
         this.tasks = tasks;
-        this.users = users;
     }
 
     @Override
@@ -40,19 +36,16 @@ public class TaskCommand extends BotCommand {
 
         /* Now we will be output tasks with delta [now - delta; now + delta], where delta = 1 month. */
         int telegramId = user.getId().intValue();
-        users.getUser(telegramId)
-                .flatMap(foundUser -> tasks.getByDeadline((int) foundUser.userId(), monthAgoInstant, monthLaterInstant)
-                        .collectList()
-                        .doOnSuccess(taskList -> {
-                            SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
-                            for (Task task : taskList) {
-                                sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
-                            }
-                        })
-                        .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage())))
+        tasks.getByDeadline(telegramId, monthAgoInstant, monthLaterInstant)
+                .collectList()
+                .doOnSuccess(taskList -> {
+                    SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
+                    for (Task task : taskList) {
+                        sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
+                    }
+                })
+                .doOnError(error -> SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Some error via getting tasks: " + error.getMessage()))
                 .subscribe();
-
-
     }
 
 

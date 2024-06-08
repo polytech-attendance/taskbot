@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.service.RecurringTaskService;
-import ru.spbstu.ai.service.UserService;
 import ru.spbstu.ai.utils.DurationParser;
 
 import java.time.Duration;
@@ -20,12 +19,9 @@ public class RecurringRescheduleCommand extends BotCommand {
 
     private final RecurringTaskService recurring;
 
-    private final UserService users;
-
-    public RecurringRescheduleCommand(RecurringTaskService recurring, UserService users) {
+    public RecurringRescheduleCommand(RecurringTaskService recurring) {
         super("reschedule", "Reschedule existing recurring task. Use next: /reschedule [Recurring Id] [hourly\\daily\\weekly\\monthly] [Deadline] (/reschedule 10 daily 2024-05-30T12:00:00Z");
         this.recurring = recurring;
-        this.users = users;
     }
 
     @Override
@@ -43,18 +39,15 @@ public class RecurringRescheduleCommand extends BotCommand {
             Instant deadline = Instant.parse(deadlineString);
             Duration period = DurationParser.parsePeriod(periodString);
             int telegramId = user.getId().intValue();
-            users.getUser(telegramId)
-                    .flatMap(foundUserId -> recurring.reschedule((int) foundUserId.userId(), recurringId, Instant.now(), period, deadline)
-                            .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task has been rescheduled."))
-                            .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task rescheduled ended with error: " + error.getMessage()))
-                            .then())
+            recurring.reschedule(telegramId, recurringId, Instant.now(), period, deadline)
+                    .doOnSuccess(value -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task has been rescheduled."))
+                    .doOnError(error -> sendMessageToChat(telegramClient, chat.getId(), "Recurring task rescheduled ended with error: " + error.getMessage()))
                     .subscribe();
 
         } catch (DateTimeParseException e) {
             sendMessageToChat(telegramClient, chat.getId(), "Invalid date format for deadline. Use ISO format (yyyy-MM-ddTHH:mm:ssZ)");
         }
     }
-
 
 
     private void sendMessageToChat(TelegramClient telegramClient, Long chatId, String message) {

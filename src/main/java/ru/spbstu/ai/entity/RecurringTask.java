@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public record RecurringTask(
-        Long id,
+        int id,
         String summary,
         Instant start,
         Duration period,
