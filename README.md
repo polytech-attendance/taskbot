@@ -1,12 +1,15 @@
 # Task Management Bot
 
+Built app is now on Docker Hub. See <https://hub.docker.com/repository/docker/mariohuq/tasks-bot/>.
+To use it, specify `services.app.image: mariohuq/tasks-bot` in `docker-compose.yml` instead of `services.app.build`.
+
 ## Dependencies
  - TelegramAPI java;
  - Spring Web Flux;
  - JOOQ;
  - PostgreSQL;
 
-### Common possibilities:
+### Common features:
  - Use /help in the telegram bot to run it.
  - Now we will provide token of bot to test it.
 
@@ -87,7 +90,7 @@ recurring tasks and tasks deadlines:
 # Deploy
 
 ```sh
-mvn package
+mvn package # requires `docker compose up db` to run generate maven task.
 docker compose build
 docker compose up
 ```

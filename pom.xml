@@ -118,8 +118,8 @@
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
                         <url>jdbc:postgresql://localhost/tasks</url>
-                        <user></user>
-                        <password></password>
+                        <user>postgres</user>
+                        <password>424242</password>
                     </jdbc>
                     <generator>
                         <database>
