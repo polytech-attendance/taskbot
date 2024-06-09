@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.RecurringTask;
 import ru.spbstu.ai.service.RecurringTaskService;
+import ru.spbstu.ai.utils.CallbackData;
 import ru.spbstu.ai.utils.SendMessageWithHtml;
 
 import java.util.ArrayList;
@@ -46,10 +47,10 @@ public class RecurringCommand extends BotCommand {
         SendMessage message = new SendMessage(chatId.toString(), task.toHumanReadableString());
 
         InlineKeyboardButton deleteButton = new InlineKeyboardButton("DELETE ❌");
-        deleteButton.setCallbackData("recurring delete " + task.id());
+        deleteButton.setCallbackData(new CallbackData.RecurringDelete(task.id()).data());
 
         InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
-        doneButton.setCallbackData("recurring done " + task.id());
+        doneButton.setCallbackData(new CallbackData.RecurringDone(task.id()).data());
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(doneButton);

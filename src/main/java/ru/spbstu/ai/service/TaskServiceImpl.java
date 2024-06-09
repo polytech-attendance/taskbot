@@ -46,9 +46,9 @@ public class TaskServiceImpl implements TaskService {
         return Mono.from(
                 ctx.update(TASK).set(TASK.SPENT_TIME,
                                 ctx.select(TASK.SPENT_TIME.add(YearToSecond.valueOf(spent)))
-                                        .from(TASK.join(OWNER).on(TASK.OWNER_ID.eq(OWNER.OWNER_ID)))
                                         .where(TASK.TASK_ID.eq(taskId)))
-                        .where(TASK.TASK_ID.eq(taskId).and(OWNER.TELEGRAM_ID.eq(telegramUserId)))
+                        .where(TASK.TASK_ID.eq(taskId)
+                                .and(taskOwnerHas(telegramUserId)))
         ).then();
     }
 

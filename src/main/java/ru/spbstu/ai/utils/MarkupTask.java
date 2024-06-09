@@ -12,11 +12,11 @@ public class MarkupTask {
 
     public static InlineKeyboardMarkup markupForTask(Task task){
         InlineKeyboardButton doneButton = new InlineKeyboardButton("DONE ✅");
-        doneButton.setCallbackData("done task " + task.id());
+        doneButton.setCallbackData(new CallbackData.TaskDone(task.id()).data());
 
         // Emoji clocks
         InlineKeyboardButton inProgressButton = new InlineKeyboardButton("IN PROGRESS \uD83D\uDD53");
-        inProgressButton.setCallbackData("in_progress task " + task.id());
+        inProgressButton.setCallbackData(new CallbackData.TaskInProgress(task.id()).data());
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         row1.add(doneButton);

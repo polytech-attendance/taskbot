@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.entity.TaskStatus;
 import ru.spbstu.ai.service.RecurringTaskService;
 import ru.spbstu.ai.service.TaskService;
+import ru.spbstu.ai.utils.CallbackData;
 import ru.spbstu.ai.utils.MarkupTask;
 
 import java.time.Instant;
@@ -87,7 +88,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             Long chatId = entry.getValue();
 
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime plusWeek = LocalDateTime.now().plusWeeks(1);
+            LocalDateTime plusWeek = now.plusWeeks(1);
 
             Instant plusDayInstant = now.toInstant(ZoneOffset.UTC);
             Instant plusWeekInstant = plusWeek.toInstant(ZoneOffset.UTC);
@@ -133,7 +134,6 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String message_text = update.getMessage().getText();
-            long chat_id = update.getMessage().getChatId();
             System.out.println("Sended text: " + message_text);
             return;
         }
@@ -141,87 +141,49 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             System.out.println("Callback query data does not start with 'done' or 'in_progress'.");
             return;
         }
-        var callbackQueryData = update.getCallbackQuery().getData().split(" ");
-        System.out.println("Callback query: " + update.getCallbackQuery().getData());
-
         int telegramUserId = update.getCallbackQuery().getFrom().getId().intValue();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        // DONE, IN_PROGRESS
-        if (callbackQueryData.length < 1 ||
-                !("done".equals(callbackQueryData[0])
-                        || "in_progress".equals(callbackQueryData[0])
-                        || "recurring".equals(callbackQueryData[0]))) {
-            return;
-        }
-        if (callbackQueryData.length >= 3 && !"recurring".equals(callbackQueryData[0])) {
-            String type = callbackQueryData[1];
-            var id = Integer.parseInt(callbackQueryData[2]);
-
-            System.out.println("Second element: " + type);
-            System.out.println("Third element: " + id);
-
-            if (!"task".equals(type)) {
-                return;
-            }
-            if ((callbackQueryData[0].equals("done"))) {
-                tasks.markDone(telegramUserId, id).subscribe();
-            } else {
-                tasks.markInProgress(telegramUserId, id).subscribe();
-            }
-
-            tasks.getTaskById(telegramUserId, id).subscribe(task -> {
-                String newText = task.toHumanReadableString();
-                EditMessageText editMessage = EditMessageText.builder()
-                        .chatId(chatId)
-                        .messageId(messageId)
-                        .text(newText)
-                        .replyMarkup(MarkupTask.markupForTask(task))
-                        .build();
-                try {
-                    telegramClient.execute(editMessage);
-                } catch (TelegramApiException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            return;
-        }
-        if (callbackQueryData.length != 3) {
-            System.out.println("Callback query data does not contain enough elements.");
-            return;
-        }
-        var id = Integer.parseInt(callbackQueryData[2]);
-        if ("done".equals(callbackQueryData[1])) {
-            recurrings.markDone(telegramUserId, id).subscribe();
-            recurrings.getById(telegramUserId, id).subscribe(task -> {
-                String newText = task.toHumanReadableString();
-                EditMessageText editMessage = EditMessageText.builder()
-                        .chatId(chatId)
-                        .messageId(messageId)
-                        .text(newText)
-                        .build();
-                // TODO Add .replyMarkup() here.
-                try {
-                    telegramClient.execute(editMessage);
-                } catch (TelegramApiException e) {
-                    throw new RuntimeException(e);
-                }
-
-            });
-        } else {
-            recurrings.deleteRecurring(telegramUserId, id).subscribe();
-            EditMessageText editMessage = EditMessageText.builder()
-                    .chatId(chatId)
-                    .messageId(messageId)
-                    .text("Task has been deleted.")
-                    .build();
+        System.out.println("Callback query: " + update.getCallbackQuery().getData());
+        var mono = switch (CallbackData.parse(update.getCallbackQuery().getData())) {
+            case CallbackData.RecurringDelete(int taskId) -> recurrings.deleteRecurring(telegramUserId, taskId)
+                    .thenReturn(EditMessageText.builder()
+                            .chatId(chatId)
+                            .messageId(messageId)
+                            .text("Task has been deleted.")
+                            .build());
+            case CallbackData.RecurringDone(int taskId) -> recurrings.markDone(telegramUserId, taskId)
+                    .then(recurrings.getById(telegramUserId, taskId))
+                    .map(task -> EditMessageText.builder()
+                            .chatId(chatId)
+                            .messageId(messageId)
+                            .text(task.toHumanReadableString())
+                            .build());
+            case CallbackData.TaskDone(int taskId) ->
+                    tasks.markDone(telegramUserId, taskId).then(tasks.getTaskById(telegramUserId, taskId))
+                            .map(task -> EditMessageText.builder()
+                                    .chatId(chatId)
+                                    .messageId(messageId)
+                                    .text(task.toHumanReadableString())
+                                    .replyMarkup(MarkupTask.markupForTask(task))
+                                    .build());
+            case CallbackData.TaskInProgress(int taskId) -> tasks.markInProgress(telegramUserId, taskId)
+                    .then(tasks.getTaskById(telegramUserId, taskId))
+                    .map(task -> EditMessageText.builder()
+                            .chatId(chatId)
+                            .messageId(messageId)
+                            .text(task.toHumanReadableString())
+                            .replyMarkup(MarkupTask.markupForTask(task))
+                            .build());
+        };
+        mono.subscribe(editMessage -> {
             try {
                 telegramClient.execute(editMessage);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
             }
-        }
+        });
     }
 
 
