@@ -1,5 +1,7 @@
 package ru.spbstu.ai.component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTelegramBot;
@@ -29,6 +31,8 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private final TaskService tasks;
 
+    private static final Logger logger = LoggerFactory.getLogger(TelegramBot.class);
+
     private final RecurringTaskService recurrings;
 
     // TODO remove this hack and use db
@@ -48,12 +52,9 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
     }
 
     private void backgroundTasks() {
-        System.out.println("Background tasks:");
-        System.out.println("Reset recurrings:");
+        logger.info("Update background tasks.");
         resetRecurrings();
-        System.out.println("Deadlines:");
         checkForDeadlines();
-        System.out.println("Updates:");
         checkForUpdates();
     }
 
@@ -78,7 +79,6 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                         }
                     });
         }
-        System.out.println("Updated recurrings...");
     }
 
 
@@ -103,7 +103,6 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                             throw new RuntimeException(e);
                         }
                     });
-            System.out.println("Checking deadlines...");
         }
     }
 
@@ -127,20 +126,23 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                 }
             });
         }
-        System.out.println("Check updates...");
     }
 
     @Override
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String message_text = update.getMessage().getText();
-            System.out.println("Sended text: " + message_text);
+            long chat_id = update.getMessage().getChatId();
+            logger.info("Sended text: " + message_text);
             return;
         }
         if (!update.hasCallbackQuery()) {
-            System.out.println("Callback query data does not start with 'done' or 'in_progress'.");
+            logger.debug("Callback query data does not start with 'done' or 'in_progress'.");
             return;
         }
+        var callbackQueryData = update.getCallbackQuery().getData().split(" ");
+        logger.info("Callback query: " + update.getCallbackQuery().getData());
+
         int telegramUserId = update.getCallbackQuery().getFrom().getId().intValue();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -194,6 +196,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     @Override
     public boolean filter(Message message) {
+        logger.info("Got message: " + message.getText() + " from User: " + message.getFrom().getUserName() + " (" + message.getFrom().getId() + ")");
         usersChats.put(message.getFrom().getId().intValue(), message.getChatId());
         return super.filter(message);
     }
