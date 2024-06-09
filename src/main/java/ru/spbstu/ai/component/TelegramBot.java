@@ -147,7 +147,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        System.out.println("Callback query: " + update.getCallbackQuery().getData());
+        logger.debug("Callback query: " + update.getCallbackQuery().getData());
         var mono = switch (CallbackData.parse(update.getCallbackQuery().getData())) {
             case CallbackData.RecurringDelete(int taskId) -> recurrings.deleteRecurring(telegramUserId, taskId)
                     .thenReturn(EditMessageText.builder()
