@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.longpolling.BotSession;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.spbstu.ai.component.*;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Configuration
 @PropertySource("classpath:bot.properties")
@@ -75,7 +77,7 @@ public class TelegramConfig {
         bot.register(reschedule);
         bot.register(recurringSummary);
         bot.register(help);
-        return botsApplication.registerBot(env.getProperty("token"), bot);
+        return botsApplication.registerBot(token(), bot);
     }
 
     @Bean
@@ -85,6 +87,12 @@ public class TelegramConfig {
 
     @Bean
     public TelegramClient telegramClient() {
-        return new OkHttpTelegramClient(env.getProperty("token"));
+
+        return new OkHttpTelegramClient(token());
+    }
+
+    @NonNull
+    private String token() {
+        return Objects.requireNonNull(env.getProperty("token"));
     }
 }

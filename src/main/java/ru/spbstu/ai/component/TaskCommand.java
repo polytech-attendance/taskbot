@@ -39,7 +39,7 @@ public class TaskCommand extends BotCommand {
         tasks.getByDeadline(telegramId, monthAgoInstant, monthLaterInstant)
                 .collectList()
                 .doOnSuccess(taskList -> {
-                    SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total amout of task: " + "<b>" + taskList.size() + "</b>");
+                    SendMessageWithHtml.sendMessage(telegramClient, chat.getId(), "Total count of task: " + "<b>" + taskList.size() + "</b>");
                     for (Task task : taskList) {
                         sendTaskMessageWithButtons(telegramClient, chat.getId(), task);
                     }

@@ -42,7 +42,10 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     private static final int BACKGROUND_TASK_PERIOD = 120;
 
-    public TelegramBot(TelegramClient client, @Value("${bot.name}") String botName, TaskService tasks, RecurringTaskService recurrings) {
+    public TelegramBot(TelegramClient client,
+                       @Value("${bot.name}") String botName,
+                       TaskService tasks,
+                       RecurringTaskService recurrings) {
         super(client, true, () -> botName);
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::backgroundTasks, 0, BACKGROUND_TASK_PERIOD, TimeUnit.SECONDS);
@@ -68,7 +71,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
                     .filter(task -> {
                         Instant period = task.start().plus(task.period());
                         return task.status().equals(TaskStatus.DONE) &&
-                                now.isAfter(period);
+                               now.isAfter(period);
                     }).flatMap(task -> recurrings.markInProgress(telegramId, task.id()).thenReturn(task))
                     .subscribe(task -> {
                         SendMessage notify = new SendMessage(chatId.toString(), "Your recurring should be complete: " + task.summary());
@@ -114,7 +117,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             recurrings.getRecurrings(telegramId).subscribe(task -> {
                 Instant period = task.start().plus(task.period());
                 if (!task.status().equals(TaskStatus.IN_PROGRESS) ||
-                        !now.isAfter(period)) {
+                    !now.isAfter(period)) {
                     return;
                 }
 
@@ -133,7 +136,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String message_text = update.getMessage().getText();
             long chat_id = update.getMessage().getChatId();
-            logger.info("Sended text: " + message_text);
+            logger.info("Sent text: {}", message_text);
             return;
         }
         if (!update.hasCallbackQuery()) {
@@ -141,13 +144,13 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
             return;
         }
         var callbackQueryData = update.getCallbackQuery().getData().split(" ");
-        logger.info("Callback query: " + update.getCallbackQuery().getData());
+        logger.info("Callback query: {}", update.getCallbackQuery().getData());
 
         int telegramUserId = update.getCallbackQuery().getFrom().getId().intValue();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        logger.debug("Callback query: " + update.getCallbackQuery().getData());
+        logger.debug("Callback query: {}", update.getCallbackQuery().getData());
         var mono = switch (CallbackData.parse(update.getCallbackQuery().getData())) {
             case CallbackData.RecurringDelete(int taskId) -> recurrings.deleteRecurring(telegramUserId, taskId)
                     .thenReturn(EditMessageText.builder()
@@ -196,7 +199,7 @@ public class TelegramBot extends CommandLongPollingTelegramBot {
 
     @Override
     public boolean filter(Message message) {
-        logger.info("Got message: " + message.getText() + " from User: " + message.getFrom().getUserName() + " (" + message.getFrom().getId() + ")");
+        logger.info("Got message: {} from User: {} (id={})", message.getText(), message.getFrom().getUserName(), message.getFrom().getId());
         usersChats.put(message.getFrom().getId().intValue(), message.getChatId());
         return super.filter(message);
     }
