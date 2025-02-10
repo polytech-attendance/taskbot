@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.14</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jooq/jooq -->
         <dependency>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty-http</artifactId>
-            <version>1.0.11</version>
+            <version>1.0.39</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
         <dependency>
@@ -73,12 +73,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.13</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.1.7</version>
+            <version>6.1.14</version>
         </dependency>
     </dependencies>
 

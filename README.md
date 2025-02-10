@@ -95,6 +95,18 @@ docker compose build
 docker compose up
 ```
 
+# To publish Docker image
+
+```sh
+$ sudo docker compose up db # in another terminal
+$ systemctl --user start docker.service
+$ mvn package
+$ sudo docker compose build app
+$ sudo docker login --username=mariohuq
+$ sudo docker image tag  taskbot-app:latest mariohuq/tasks-bot:latest
+$ sudo docker push mariohuq/tasks-bot:latest
+```
+
 ## TODO:
 
 - Make more user-friendly UI in Telegram.
