@@ -1,0 +1,63 @@
+heat_template_version: "2021-04-16"
+description: "version 2017-09-01 created by HOT Generator at Tue, 18 Feb 2025 09:34:25 GMT."
+resources:
+  Server_1:
+    type: "OS::Nova::Server"
+    properties:
+      networks:
+        - subnet: "d80da048-c188-45a5-80e4-55d914fe58ea"
+      key_name: timofeevssh
+      name: timofeev-instance
+      flavor: "m1.small"
+      image: "d608627a-ef62-452d-8a74-1c307cbe276d"
+      availability_zone: nova
+    depends_on:
+      - SecurityGroup_1
+      - Port_1
+  SecurityGroup_1:
+    type: "OS::Neutron::SecurityGroup"
+    properties:
+      rules:
+        - ethertype: IPv4
+          protocol: tcp
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+          port_range_min: 80
+          port_range_max: 80
+          direction: ingress
+        - direction: ingress
+          ethertype: IPv4
+          protocol: tcp
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+          port_range_max: 22
+          port_range_min: 22
+        - direction: ingress
+          ethertype: IPv4
+          protocol: tcp
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+          port_range_max: 443
+          port_range_min: 443
+        - direction: ingress
+          ethertype: IPv4
+          protocol: tcp
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+          port_range_max: 51111
+          port_range_min: 51111
+      name: "sg-timofeev"
+  Port_1:
+    type: "OS::Neutron::Port"
+    properties:
+      admin_state_up: true
+      fixed_ips:
+        - subnet: "d80da048-c188-45a5-80e4-55d914fe58ea"
+      security_groups:
+        - "4e3ce92e-435c-450f-a0b1-5ce53e7f9cf9"
+        - "e974b577-bc9c-4885-9765-f131007bbb7a"
+        - "f523cd0d-84bd-4b55-a0d9-7ef98db7fdd2"
+      name: port
+      network: "17eae9b6-2168-4a07-a0d3-66d5ad2a9f0e"
+    depends_on:
+      - SecurityGroup_1
