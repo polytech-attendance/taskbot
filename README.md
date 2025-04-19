@@ -105,7 +105,7 @@ docker compose up
 # To publish Docker image
 
 ```sh
-$ sudo docker compose up db # in another terminal
+$ docker compose up db # in another terminal
 $ systemctl --user start docker.service
 $ mvn package
 $ sudo docker compose build app
