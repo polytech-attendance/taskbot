@@ -14,15 +14,22 @@ import org.springframework.core.env.Environment;
 import java.util.Objects;
 
 @Configuration
-@PropertySource("classpath:db.properties")
-public class DatabaseConfig {
+public class DatabaseConfig {   
 
     @Autowired
     Environment env;
 
     @Bean
     DSLContext dslContext() {
-        ConnectionFactory factory = ConnectionFactories.get(Objects.requireNonNull(env.getProperty("r2dbc_url")));
+        String host = env.getProperty("POSTGRES_HOST");
+        String port = env.getProperty("POSTGRES_PORT");
+        String db = env.getProperty("POSTGRES_DB");
+        String user = env.getProperty("POSTGRES_USER");
+        String pass = env.getProperty("POSTGRES_PASSWORD");
+
+        String url = String.format("r2dbc:postgresql://%s:%s@%s:%s/%s", user, pass, host, port, db);
+
+        ConnectionFactory factory = ConnectionFactories.get(url);
         return DSL.using(factory, SQLDialect.POSTGRES);
     }
 }
