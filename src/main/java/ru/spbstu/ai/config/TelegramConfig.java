@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Configuration
-@PropertySource("classpath:bot.properties")
 @ComponentScan(basePackages = "ru.spbstu.ai")
 public class TelegramConfig {
 
@@ -93,6 +92,6 @@ public class TelegramConfig {
 
     @NonNull
     private String token() {
-        return Objects.requireNonNull(env.getProperty("token"));
+        return Objects.requireNonNull(env.getProperty("TOKEN"));
     }
 }
